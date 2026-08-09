@@ -7,7 +7,7 @@ export const AppProvider = ({ children }) => {
   const [data, setData] = useState([]);
   const [isError, setIsError] = useState(false);
   const [cart, setCart] = useState([]);
-  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = (import.meta.env.VITE_BASE_URL || "").replace(/\/$/, "");
 
   const refreshData = useCallback(async () => {
     try {
