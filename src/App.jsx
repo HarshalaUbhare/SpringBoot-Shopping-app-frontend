@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ToastContainer } from "react-toastify";
 import { AppProvider } from "./Context/Context";
@@ -23,18 +23,40 @@ const PageTransition = ({ children }) => (
   </motion.div>
 );
 
-const AnimatedRoutes = ({ selectedCategory, searchQuery }) => (
-  <Routes>
-    <Route path="/" element={<PageTransition><Home selectedCategory={selectedCategory} searchQuery={searchQuery} /></PageTransition>} />
-    <Route path="/product/:id" element={<PageTransition><Product /></PageTransition>} />
-    <Route path="/product/update/:id" element={<PageTransition><UpdateProduct /></PageTransition>} />
-    <Route path="/add-product" element={<PageTransition><AddProduct /></PageTransition>} />
-    <Route path="/cart" element={<PageTransition><Cart /></PageTransition>} />
-    <Route path="/order" element={<PageTransition><Order /></PageTransition>} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/auth-callback" element={<AuthCallback />} />
-  </Routes>
-);
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem("shopease_token");
+  if (!token) return <Navigate to="/login" replace />;
+  return children;
+};
+
+const AppShell = ({ selectedCategory, setSelectedCategory, searchQuery, setSearchQuery }) => {
+  const { pathname } = useLocation();
+  const hideNavbar = pathname === "/login" || pathname === "/auth-callback";
+
+  return (
+    <>
+      {!hideNavbar && (
+        <Navbar
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      )}
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/auth-callback" element={<AuthCallback />} />
+        <Route path="/" element={<ProtectedRoute><PageTransition><Home selectedCategory={selectedCategory} searchQuery={searchQuery} /></PageTransition></ProtectedRoute>} />
+        <Route path="/product/:id" element={<ProtectedRoute><PageTransition><Product /></PageTransition></ProtectedRoute>} />
+        <Route path="/product/update/:id" element={<ProtectedRoute><PageTransition><UpdateProduct /></PageTransition></ProtectedRoute>} />
+        <Route path="/add-product" element={<ProtectedRoute><PageTransition><AddProduct /></PageTransition></ProtectedRoute>} />
+        <Route path="/cart" element={<ProtectedRoute><PageTransition><Cart /></PageTransition></ProtectedRoute>} />
+        <Route path="/order" element={<ProtectedRoute><PageTransition><Order /></PageTransition></ProtectedRoute>} />
+      </Routes>
+      <ToastContainer position="top-right" autoClose={3000} />
+    </>
+  );
+};
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -43,14 +65,12 @@ function App() {
   return (
     <AppProvider>
       <BrowserRouter>
-        <Navbar
+        <AppShell
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
-        <AnimatedRoutes selectedCategory={selectedCategory} searchQuery={searchQuery} />
-        <ToastContainer position="top-right" autoClose={3000} />
       </BrowserRouter>
     </AppProvider>
   );
