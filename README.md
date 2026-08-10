@@ -1,4 +1,4 @@
-<img width="1428" height="832" alt="Screenshot 2026-08-10 at 9 06 13 PM" src="https://github.com/user-attachments/assets/cc6f6f3c-8ab9-4282-b27f-524afc6c15e5" />
+
 # SpringBoot-Shopping-App Frontend
 
 React frontend for a Spring Boot e-commerce application — product browsing, cart, checkout, orders, and OAuth2 login (Google/GitHub).
