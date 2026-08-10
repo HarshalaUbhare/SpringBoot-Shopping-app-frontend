@@ -10,6 +10,7 @@ import AddProduct from "./components/AddProduct";
 import UpdateProduct from "./components/UpdateProduct";
 import Cart from "./components/Cart";
 import Order from "./components/Order";
+import Login from "./components/Login";
 
 const PageTransition = ({ children }) => (
   <motion.div
@@ -29,6 +30,7 @@ const AnimatedRoutes = ({ selectedCategory, searchQuery }) => (
     <Route path="/add-product" element={<PageTransition><AddProduct /></PageTransition>} />
     <Route path="/cart" element={<PageTransition><Cart /></PageTransition>} />
     <Route path="/order" element={<PageTransition><Order /></PageTransition>} />
+    <Route path="/login" element={<Login />} />
   </Routes>
 );
 
