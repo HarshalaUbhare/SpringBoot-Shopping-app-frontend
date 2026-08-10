@@ -132,8 +132,9 @@ const Order = () => {
                         <tr>
                           <td colSpan={7} className="p-0">
                             <AnimatePresence initial={false}>
-                              {expanded && (
+                              {expanded ? (
                                 <motion.div
+                                  key={`details-${order.orderId}`}
                                   initial={{ height: 0, opacity: 0 }}
                                   animate={{ height: "auto", opacity: 1 }}
                                   exit={{ height: 0, opacity: 0 }}
@@ -142,7 +143,7 @@ const Order = () => {
                                 >
                                   <OrderItemsTable items={order.items} />
                                 </motion.div>
-                              )}
+                              ) : null}
                             </AnimatePresence>
                           </td>
                         </tr>
@@ -182,8 +183,9 @@ const Order = () => {
                       </Button>
                     </div>
                     <AnimatePresence initial={false}>
-                      {expanded && (
+                      {expanded ? (
                         <motion.div
+                          key={`mobile-details-${order.orderId}`}
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
@@ -205,7 +207,7 @@ const Order = () => {
                             </div>
                           </div>
                         </motion.div>
-                      )}
+                      ) : null}
                     </AnimatePresence>
                   </CardContent>
                 </Card>

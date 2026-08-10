@@ -110,8 +110,9 @@ const Navbar = ({ selectedCategory, setSelectedCategory }) => {
       </div>
 
       <AnimatePresence>
-        {menuOpen && (
+        {menuOpen ? (
           <motion.div
+            key="mobile-menu"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -159,7 +160,7 @@ const Navbar = ({ selectedCategory, setSelectedCategory }) => {
               </form>
             </div>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </nav>
   );
