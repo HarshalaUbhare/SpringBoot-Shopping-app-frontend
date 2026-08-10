@@ -35,7 +35,7 @@ const Order = () => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get(`${baseUrl}/api/orders`);
-        setOrders(response.data);
+        setOrders(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.log(error);
         setError("Failed to fetch orders. Please try again later.");
