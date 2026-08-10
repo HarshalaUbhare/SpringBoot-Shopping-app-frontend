@@ -71,9 +71,6 @@ const UpdateProduct = () => {
     const updatedProduct = new FormData();
     if (imageChanged && image) {
       updatedProduct.append("imageFile", image);
-    } else {
-      // Send null or empty value when no image is selected by user
-      updatedProduct.append("imageFile", null);
     }
 
     updatedProduct.append(

@@ -74,7 +74,6 @@ const Cart = () => {
         console.log("updated product data", updatedProductData);
 
         const cartProduct = new FormData();
-        cartProduct.append("imageFile", cartImage);
         cartProduct.append(
           "product",
           new Blob([JSON.stringify(updatedProductData)], {
