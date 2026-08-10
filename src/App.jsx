@@ -11,6 +11,7 @@ import UpdateProduct from "./components/UpdateProduct";
 import Cart from "./components/Cart";
 import Order from "./components/Order";
 import Login from "./components/Login";
+import AuthCallback from "./components/AuthCallback";
 
 const PageTransition = ({ children }) => (
   <motion.div
@@ -31,6 +32,7 @@ const AnimatedRoutes = ({ selectedCategory, searchQuery }) => (
     <Route path="/cart" element={<PageTransition><Cart /></PageTransition>} />
     <Route path="/order" element={<PageTransition><Order /></PageTransition>} />
     <Route path="/login" element={<Login />} />
+    <Route path="/auth-callback" element={<AuthCallback />} />
   </Routes>
 );
 

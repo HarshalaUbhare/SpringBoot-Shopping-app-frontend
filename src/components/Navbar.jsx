@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
   Home as HomeIcon,
+  LogIn,
+  LogOut,
   Menu,
   Package,
   PlusCircle,
@@ -34,7 +36,7 @@ const CATEGORIES = [
 ];
 
 const Navbar = ({ selectedCategory, setSelectedCategory, searchQuery, setSearchQuery }) => {
-  const { cart } = useContext(AppContext);
+  const { cart, user, logout } = useContext(AppContext);
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -95,6 +97,17 @@ const Navbar = ({ selectedCategory, setSelectedCategory, searchQuery, setSearchQ
         <div className="hidden items-center gap-3 md:flex">
           <SearchInput value={searchQuery} onChange={setSearchQuery} onSubmit={handleSearch} />
           <CartLink count={cartCount} />
+          {user ? (
+            <UserMenu user={user} onLogout={logout} />
+          ) : (
+            <Link
+              to="/login"
+              className="flex items-center gap-1.5 rounded-lg border border-border px-3.5 py-2 text-sm font-medium text-foreground/80 shadow-sm transition-all hover:bg-accent"
+            >
+              <LogIn className="h-4 w-4" />
+              Login
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
@@ -147,6 +160,28 @@ const Navbar = ({ selectedCategory, setSelectedCategory, searchQuery, setSearchQ
                   </button>
                 ))}
               </div>
+
+              {user ? (
+                <div className="mt-2 flex items-center justify-between rounded-lg bg-muted px-3 py-2">
+                  <span className="text-sm font-medium truncate">{user.name || user.email}</span>
+                  <button
+                    onClick={() => { logout(); setMenuOpen(false); }}
+                    className="ml-2 flex items-center gap-1 text-sm text-destructive"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="mt-1 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Login
+                </Link>
+              )}
 
               <form onSubmit={handleSearch} className="relative mt-3">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -206,6 +241,29 @@ const SearchInput = ({ value, onChange, onSubmit }) => (
       className="w-56 rounded-lg border border-input bg-transparent py-2 pl-9 pr-3 text-sm shadow-sm outline-none transition-all focus-visible:w-64 focus-visible:ring-2 focus-visible:ring-ring"
     />
   </form>
+);
+
+const UserMenu = ({ user, onLogout }) => (
+  <div className="flex items-center gap-2">
+    {user.picture ? (
+      <img
+        src={user.picture}
+        alt={user.name}
+        className="h-8 w-8 rounded-full object-cover ring-2 ring-primary/20"
+      />
+    ) : (
+      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+        {(user.name || user.email || "U")[0].toUpperCase()}
+      </div>
+    )}
+    <button
+      onClick={onLogout}
+      className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+      title="Logout"
+    >
+      <LogOut className="h-4 w-4" />
+    </button>
+  </div>
 );
 
 const CartLink = ({ count }) => (
