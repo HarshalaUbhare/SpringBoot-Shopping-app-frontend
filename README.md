@@ -1,3 +1,4 @@
+<img width="1428" height="832" alt="Screenshot 2026-08-10 at 9 06 13 PM" src="https://github.com/user-attachments/assets/cc6f6f3c-8ab9-4282-b27f-524afc6c15e5" />
 # SpringBoot-Shopping-App Frontend
 
 React frontend for a Spring Boot e-commerce application — product browsing, cart, checkout, orders, and OAuth2 login (Google/GitHub).
@@ -59,6 +60,11 @@ DashBoard
 
 Add Product
 <img width="1465" height="836" alt="Screenshot 2026-08-10 at 7 39 50 PM" src="https://github.com/user-attachments/assets/16a184b8-69d5-4770-9d7c-ecd69e2de806" />
+
+Generating product description and image from AI
+<img width="1438" height="835" alt="Screenshot 2026-08-10 at 9 06 34 PM" src="https://github.com/user-attachments/assets/551f1c79-8857-4e7b-943b-260b47dec5b6" />
+
+<img width="1352" height="831" alt="Screenshot 2026-08-10 at 9 06 49 PM" src="https://github.com/user-attachments/assets/e9a29c1e-37c2-4d6c-b44c-0388cccc75a1" />
 
 Cart
 <img width="1447" height="836" alt="Screenshot 2026-08-10 at 7 40 27 PM" src="https://github.com/user-attachments/assets/f66119ed-8a18-40ab-b89b-7deb46e7feaa" />
