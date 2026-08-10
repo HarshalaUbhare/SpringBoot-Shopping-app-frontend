@@ -1,8 +1,12 @@
-import React, { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import AppContext from "../Context/Context";
 import axios from "axios";
 import CheckoutPopup from "./CheckoutPopup";
-import { Button } from "react-bootstrap";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "react-toastify";
 
 const Cart = () => {
@@ -18,10 +22,7 @@ const Cart = () => {
   }, [cart]);
 
   useEffect(() => {
-    const total = cartItems.reduce(
-      (acc, item) => acc + item.price * item.quantity,
-      0,
-    );
+    const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
     setTotalPrice(total);
   }, [cartItems]);
 
@@ -41,24 +42,20 @@ const Cart = () => {
 
   const handleDecreaseQuantity = (itemId) => {
     const newCartItems = cartItems.map((item) =>
-      item.id === itemId
-        ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
-        : item,
+      item.id === itemId ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item
     );
     setCartItems(newCartItems);
   };
 
   const handleRemoveFromCart = (itemId) => {
     removeFromCart(itemId);
-    const newCartItems = cartItems.filter((item) => item.id !== itemId);
-    setCartItems(newCartItems);
+    setCartItems((prev) => prev.filter((item) => item.id !== itemId));
   };
 
   const handleCheckout = async () => {
     try {
       for (const item of cartItems) {
-        const { imageUrl, imageName, imageData, imageType, quantity, ...rest } =
-          item;
+        const { imageUrl, imageName, imageData, imageType, quantity, ...rest } = item;
         const updatedStockQuantity = item.stockQuantity - item.quantity;
 
         const updatedProductData = {
@@ -69,9 +66,7 @@ const Cart = () => {
         const cartProduct = new FormData();
         cartProduct.append(
           "product",
-          new Blob([JSON.stringify(updatedProductData)], {
-            type: "application/json",
-          }),
+          new Blob([JSON.stringify(updatedProductData)], { type: "application/json" })
         );
 
         await axios
@@ -91,134 +86,143 @@ const Cart = () => {
   };
 
   return (
-    <div className="container mt-5 pt-4">
-      <div className="row justify-content-center">
-        <div className="col-12 col-lg-10">
-          <div className="card shadow-sm">
-            <div className="card-header bg-white">
-              <h4 className="mb-0">Shopping Cart</h4>
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+      <Card>
+        <CardHeader className="border-b border-border">
+          <CardTitle className="text-xl">Shopping Cart</CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 sm:p-6">
+          {cartItems.length === 0 ? (
+            <div className="flex flex-col items-center gap-3 py-16 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                <ShoppingCart className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold">Your cart is empty</h3>
+              <Button asChild className="mt-2">
+                <Link to="/">Continue Shopping</Link>
+              </Button>
             </div>
-            <div className="card-body p-2 p-md-4">
-              {cartItems.length === 0 ? (
-                <div className="text-center py-5">
-                  <i className="bi bi-cart-x fs-1 text-muted"></i>
-                  <h5 className="mt-3">Your cart is empty</h5>
-                  <a href="/" className="btn btn-primary mt-3">
-                    Continue Shopping
-                  </a>
-                </div>
-              ) : (
-                <>
-                  {/* Desktop table */}
-                  <div className="d-none d-md-block">
-                    <table className="table table-hover align-middle">
-                      <thead>
-                        <tr>
-                          <th>Product</th>
-                          <th>Price</th>
-                          <th>Quantity</th>
-                          <th>Total</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {cartItems.map((item) => (
-                          <tr key={item.id}>
-                            <td>
-                              <div className="d-flex align-items-center">
-                                <img
-                                  src={`${baseUrl}/api/product/${item.id}/image`}
-                                  alt={item.name}
-                                  className="rounded me-3"
-                                  width="60"
-                                  height="60"
-                                  style={{ objectFit: "cover" }}
-                                />
-                                <div>
-                                  <h6 className="mb-0">{item.name}</h6>
-                                  <small className="text-muted">{item.brand}</small>
-                                </div>
+          ) : (
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                      <th className="py-2 font-medium">Product</th>
+                      <th className="py-2 font-medium">Price</th>
+                      <th className="py-2 font-medium">Quantity</th>
+                      <th className="py-2 font-medium">Total</th>
+                      <th className="py-2 font-medium"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <AnimatePresence initial={false}>
+                      {cartItems.map((item) => (
+                        <motion.tr
+                          key={item.id}
+                          layout
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          className="border-b border-border/60"
+                        >
+                          <td className="py-3">
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={`${baseUrl}/api/product/${item.id}/image`}
+                                alt={item.name}
+                                className="h-14 w-14 rounded-lg object-cover"
+                              />
+                              <div>
+                                <p className="font-medium">{item.name}</p>
+                                <p className="text-xs text-muted-foreground">{item.brand}</p>
                               </div>
-                            </td>
-                            <td>₹ {item.price}</td>
-                            <td>
-                              <div className="input-group input-group-sm" style={{ width: "110px" }}>
-                                <button className="btn btn-outline-secondary" onClick={() => handleDecreaseQuantity(item.id)}>−</button>
-                                <input type="text" className="form-control text-center" value={item.quantity} readOnly />
-                                <button className="btn btn-outline-secondary" onClick={() => handleIncreaseQuantity(item.id)}>+</button>
-                              </div>
-                            </td>
-                            <td className="fw-bold">₹ {(item.price * item.quantity).toFixed(2)}</td>
-                            <td>
-                              <button className="btn btn-sm btn-outline-danger" onClick={() => handleRemoveFromCart(item.id)}>
-                                <i className="bi bi-trash"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Mobile card layout */}
-                  <div className="d-md-none">
-                    {cartItems.map((item) => (
-                      <div key={item.id} className="card mb-3">
-                        <div className="card-body p-3">
-                          <div className="d-flex gap-3 mb-2">
-                            <img
-                              src={`${baseUrl}/api/product/${item.id}/image`}
-                              alt={item.name}
-                              width="60"
-                              height="60"
-                              className="rounded"
-                              style={{ objectFit: "cover", flexShrink: 0 }}
-                            />
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <h6 className="mb-0 text-truncate">{item.name}</h6>
-                              <small className="text-muted">{item.brand}</small>
-                              <div className="fw-bold mt-1">₹ {item.price}</div>
                             </div>
-                            <button
-                              className="btn btn-sm btn-outline-danger align-self-start"
+                          </td>
+                          <td>₹{item.price}</td>
+                          <td>
+                            <QuantityStepper
+                              value={item.quantity}
+                              onDecrease={() => handleDecreaseQuantity(item.id)}
+                              onIncrease={() => handleIncreaseQuantity(item.id)}
+                            />
+                          </td>
+                          <td className="font-bold">₹{(item.price * item.quantity).toFixed(2)}</td>
+                          <td>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-destructive hover:bg-destructive/10"
                               onClick={() => handleRemoveFromCart(item.id)}
                             >
-                              <i className="bi bi-trash"></i>
-                            </button>
-                          </div>
-                          <div className="d-flex justify-content-between align-items-center mt-2">
-                            <div className="input-group input-group-sm" style={{ width: "120px" }}>
-                              <button className="btn btn-outline-secondary" onClick={() => handleDecreaseQuantity(item.id)}>−</button>
-                              <input type="text" className="form-control text-center" value={item.quantity} readOnly />
-                              <button className="btn btn-outline-secondary" onClick={() => handleIncreaseQuantity(item.id)}>+</button>
-                            </div>
-                            <span className="fw-bold">Total: ₹ {(item.price * item.quantity).toFixed(2)}</span>
-                          </div>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </td>
+                        </motion.tr>
+                      ))}
+                    </AnimatePresence>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile card layout */}
+              <div className="space-y-3 md:hidden">
+                <AnimatePresence initial={false}>
+                  {cartItems.map((item) => (
+                    <motion.div
+                      key={item.id}
+                      layout
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="rounded-xl border border-border p-3"
+                    >
+                      <div className="flex gap-3">
+                        <img
+                          src={`${baseUrl}/api/product/${item.id}/image`}
+                          alt={item.name}
+                          className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate font-medium">{item.name}</p>
+                          <p className="text-xs text-muted-foreground">{item.brand}</p>
+                          <p className="mt-1 font-bold">₹{item.price}</p>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 self-start text-destructive hover:bg-destructive/10"
+                          onClick={() => handleRemoveFromCart(item.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
-                    ))}
-                  </div>
-
-                  <div className="card mt-3">
-                    <div className="card-body">
-                      <div className="d-flex justify-content-between align-items-center">
-                        <h5 className="mb-0">Total:</h5>
-                        <h5 className="mb-0">₹ {totalPrice.toFixed(2)}</h5>
+                      <div className="mt-3 flex items-center justify-between">
+                        <QuantityStepper
+                          value={item.quantity}
+                          onDecrease={() => handleDecreaseQuantity(item.id)}
+                          onIncrease={() => handleIncreaseQuantity(item.id)}
+                        />
+                        <span className="font-bold">₹{(item.price * item.quantity).toFixed(2)}</span>
                       </div>
-                    </div>
-                  </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
 
-                  <div className="d-grid mt-4">
-                    <Button variant="primary" size="lg" onClick={() => setShowModal(true)}>
-                      Proceed to Checkout
-                    </Button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+              <div className="mt-6 flex items-center justify-between rounded-xl bg-muted/50 p-4">
+                <span className="font-semibold">Total</span>
+                <span className="text-xl font-bold">₹{totalPrice.toFixed(2)}</span>
+              </div>
+
+              <Button size="lg" className="mt-4 w-full" onClick={() => setShowModal(true)}>
+                Proceed to Checkout
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
 
       <CheckoutPopup
         show={showModal}
@@ -230,5 +234,23 @@ const Cart = () => {
     </div>
   );
 };
+
+const QuantityStepper = ({ value, onDecrease, onIncrease }) => (
+  <div className="flex w-fit items-center rounded-lg border border-input">
+    <button
+      onClick={onDecrease}
+      className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+    >
+      <Minus className="h-3.5 w-3.5" />
+    </button>
+    <span className="w-8 text-center text-sm font-medium">{value}</span>
+    <button
+      onClick={onIncrease}
+      className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+    >
+      <Plus className="h-3.5 w-3.5" />
+    </button>
+  </div>
+);
 
 export default Cart;

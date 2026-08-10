@@ -1,41 +1,46 @@
-import React from "react";
-import { Modal, Button } from "react-bootstrap";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const CheckoutPopup = ({ show, handleClose, cartItems, totalPrice, handleCheckout }) => {
   return (
-    <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>Confirm Checkout</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <p className="mb-3">You are about to place an order for:</p>
-        <ul className="list-group mb-3">
+    <Dialog open={show} onOpenChange={(open) => !open && handleClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Confirm Checkout</DialogTitle>
+        </DialogHeader>
+
+        <p className="text-sm text-muted-foreground">You are about to place an order for:</p>
+
+        <ul className="max-h-64 space-y-1 overflow-y-auto rounded-lg border border-border p-2 text-sm">
           {cartItems.map((item) => (
-            <li
-              key={item.id}
-              className="list-group-item d-flex justify-content-between"
-            >
+            <li key={item.id} className="flex items-center justify-between rounded-md px-2 py-1.5">
               <span>
-                {item.name} x {item.quantity}
+                {item.name} × {item.quantity}
               </span>
-              <span>₹ {(item.price * item.quantity).toFixed(2)}</span>
+              <span className="font-medium">₹{(item.price * item.quantity).toFixed(2)}</span>
             </li>
           ))}
         </ul>
-        <div className="d-flex justify-content-between fw-bold fs-5">
-          <span>Total:</span>
-          <span>₹ {totalPrice.toFixed(2)}</span>
+
+        <div className="flex items-center justify-between border-t border-border pt-3 text-base font-bold">
+          <span>Total</span>
+          <span>₹{totalPrice.toFixed(2)}</span>
         </div>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cancel
-        </Button>
-        <Button variant="primary" onClick={handleCheckout}>
-          Confirm Order
-        </Button>
-      </Modal.Footer>
-    </Modal>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleCheckout}>Confirm Order</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

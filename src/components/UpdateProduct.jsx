@@ -1,10 +1,39 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { ArrowLeft, Image as ImageIcon, IndianRupee, Info, Loader2, RotateCw, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const CATEGORIES = ["Laptop", "Headphone", "Mobile", "Electronics", "Toys", "Fashion"];
+
+const Section = ({ icon: Icon, title, children }) => (
+  <div className="bg-card rounded-2xl border border-border p-6 mb-4">
+    <p className="font-semibold text-sm mb-4 pb-3 border-b border-border flex items-center gap-2">
+      <Icon className="h-4 w-4 text-primary" />
+      {title}
+    </p>
+    {children}
+  </div>
+);
 
 const UpdateProduct = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const baseUrl = (import.meta.env.VITE_BASE_URL || "").replace(/\/$/, "");
+
   const [product, setProduct] = useState({});
   const [image, setImage] = useState();
   const [updateProduct, setUpdateProduct] = useState({
@@ -17,31 +46,22 @@ const UpdateProduct = () => {
     productAvailable: false,
     stockQuantity: "",
   });
-
   const [imageChanged, setImageChanged] = useState(false);
-  const [validated, setValidated] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-
-  const baseUrl = (import.meta.env.VITE_BASE_URL || "").replace(/\/$/, "");
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(`${baseUrl}/api/product/${id}`);
-
         setProduct(response.data);
 
-        console.log(response.data, "update product response");
-
-        const responseImage = await axios.get(
-          `${baseUrl}/api/product/${id}/image`,
-          { responseType: "blob" },
-        );
-        const imageFile = await converUrlToFile(
-          responseImage.data,
-          response.data.imageName,
-        );
+        const responseImage = await axios.get(`${baseUrl}/api/product/${id}/image`, {
+          responseType: "blob",
+        });
+        const imageFile = new File([responseImage.data], response.data.imageName, {
+          type: responseImage.data.type,
+        });
         setImage(imageFile);
         setUpdateProduct(response.data);
       } catch (error) {
@@ -50,48 +70,43 @@ const UpdateProduct = () => {
     };
 
     fetchProduct();
-  }, [id]);
+  }, [id, baseUrl]);
 
-  useEffect(() => {
-    console.log("image Updated", image);
-  }, [image]);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUpdateProduct({ ...updateProduct, [name]: value });
+    if (errors[name]) setErrors({ ...errors, [name]: null });
+  };
 
-  const navigate = useNavigate();
-
-  const converUrlToFile = async (blobData, fileName) => {
-    const file = new File([blobData], fileName, { type: blobData.type });
-    return file;
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
+      setImageChanged(true);
+    }
   };
 
   const handleSubmit = async (e) => {
-    setLoading(true);
     e.preventDefault();
-    console.log("images", image);
-    console.log("productsdfsfsf", updateProduct);
-    const updatedProduct = new FormData();
-    if (imageChanged && image) {
-      updatedProduct.append("imageFile", image);
-    }
+    setLoading(true);
 
-    updatedProduct.append(
+    const formData = new FormData();
+    if (imageChanged && image) {
+      formData.append("imageFile", image);
+    }
+    formData.append(
       "product",
       new Blob([JSON.stringify(updateProduct)], { type: "application/json" }),
     );
 
-    console.log("formData : ", updatedProduct);
     axios
-      .put(`${baseUrl}/api/product/${id}`, updatedProduct, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      .put(`${baseUrl}/api/product/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       })
-      .then((response) => {
-        console.log("Product updated successfully:", updatedProduct);
-        toast.success("product updated successfully");
+      .then(() => {
+        toast.success("Product updated successfully");
       })
       .catch((error) => {
         console.error("Error updating product:", error);
-        console.log("product unsuccessfull update", updateProduct);
         toast.error("Failed to update product. Please try again.");
       })
       .finally(() => {
@@ -100,259 +115,192 @@ const UpdateProduct = () => {
       });
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUpdateProduct({
-      ...updateProduct,
-      [name]: value,
-    });
-  };
-
-  const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
-      setImageChanged(true); // Mark that user has selected a new image
-    }
-  };
-
   if (!product.id) {
     return (
-      <div className="container mt-5 pt-5">
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{ height: "300px" }}
-        >
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
+      <div className="mx-auto max-w-2xl px-4 py-10">
+        <Skeleton className="h-8 w-56 mb-6" />
+        <Skeleton className="h-64 w-full rounded-2xl mb-4" />
+        <Skeleton className="h-40 w-full rounded-2xl" />
       </div>
     );
   }
 
   return (
-    <div className="container mt-5 pt-3 pt-md-4 px-2 px-md-3">
-      <div className="row justify-content-center">
-        <div className="col-12 col-md-10">
-          <div className="card shadow">
-            <div className="card-body">
-              <h2 className="text-center mb-4">Update Product</h2>
-
-              <form
-                className="row g-3"
-                noValidate
-                validated={validated.toString()}
-                onSubmit={handleSubmit}
-              >
-                <div className="col-md-6">
-                  <label htmlFor="name" className="form-label fw-bold">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    className={`form-control ${validated && errors.name ? "is-invalid" : ""}`}
-                    placeholder={product.name}
-                    value={updateProduct.name}
-                    onChange={handleChange}
-                    name="name"
-                    id="name"
-                    required
-                  />
-                  {errors.name && (
-                    <div className="invalid-feedback">{errors.name}</div>
-                  )}
-                </div>
-
-                <div className="col-md-6">
-                  <label htmlFor="brand" className="form-label fw-bold">
-                    Brand
-                  </label>
-                  <input
-                    type="text"
-                    name="brand"
-                    className={`form-control ${validated && errors.brand ? "is-invalid" : ""}`}
-                    placeholder={product.brand}
-                    value={updateProduct.brand}
-                    onChange={handleChange}
-                    id="brand"
-                    required
-                  />
-                  {errors.brand && (
-                    <div className="invalid-feedback">{errors.brand}</div>
-                  )}
-                </div>
-
-                <div className="col-12">
-                  <label htmlFor="description" className="form-label fw-bold">
-                    Description
-                  </label>
-                  <textarea
-                    className={`form-control ${validated && errors.description ? "is-invalid" : ""}`}
-                    placeholder={product.description}
-                    value={updateProduct.description}
-                    name="description"
-                    onChange={handleChange}
-                    id="description"
-                    rows="3"
-                    required
-                  />
-                  {errors.description && (
-                    <div className="invalid-feedback">{errors.description}</div>
-                  )}
-                </div>
-
-                <div className="col-md-4">
-                  <label htmlFor="price" className="form-label fw-bold">
-                    Price
-                  </label>
-                  <div className="input-group">
-                    <span className="input-group-text">Rs</span>
-                    <input
-                      type="number"
-                      className={`form-control ${validated && errors.price ? "is-invalid" : ""}`}
-                      onChange={handleChange}
-                      value={updateProduct.price}
-                      placeholder={product.price}
-                      name="price"
-                      id="price"
-                      min="0.01"
-                      step="0.01"
-                      required
-                    />
-                    {errors.price && (
-                      <div className="invalid-feedback">{errors.price}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-4">
-                  <label htmlFor="category" className="form-label fw-bold">
-                    Category
-                  </label>
-                  <select
-                    className={`form-select ${validated && errors.category ? "is-invalid" : ""}`}
-                    value={updateProduct.category}
-                    onChange={handleChange}
-                    name="category"
-                    id="category"
-                    required
-                  >
-                    <option value="">Select category</option>
-                    <option value="Laptop">Laptop</option>
-                    <option value="Headphone">Headphone</option>
-                    <option value="Mobile">Mobile</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Toys">Toys</option>
-                    <option value="Fashion">Fashion</option>
-                  </select>
-                  {errors.category && (
-                    <div className="invalid-feedback">{errors.category}</div>
-                  )}
-                </div>
-
-                <div className="col-md-4">
-                  <label htmlFor="stockQuantity" className="form-label fw-bold">
-                    Stock Quantity
-                  </label>
-                  <input
-                    type="number"
-                    className={`form-control ${validated && errors.stockQuantity ? "is-invalid" : ""}`}
-                    onChange={handleChange}
-                    placeholder={product.stockQuantity}
-                    value={updateProduct.stockQuantity}
-                    name="stockQuantity"
-                    id="stockQuantity"
-                    min="0"
-                    required
-                  />
-                  {errors.stockQuantity && (
-                    <div className="invalid-feedback">
-                      {errors.stockQuantity}
-                    </div>
-                  )}
-                </div>
-
-                <div className="col-md-6">
-                  <label htmlFor="imageFile" className="form-label fw-bold">
-                    Image
-                  </label>
-                  {image && (
-                    <div className="mb-2">
-                      <img
-                        src={image ? URL.createObjectURL(image) : ""}
-                        alt={product.name}
-                        className="img-fluid rounded mb-2"
-                        style={{ height: "150px", objectFit: "contain" }}
-                      />
-                    </div>
-                  )}
-                  <input
-                    className={`form-control ${validated && errors.image ? "is-invalid" : ""}`}
-                    type="file"
-                    onChange={handleImageChange}
-                    id="imageFile"
-                    accept="image/png, image/jpeg"
-                  />
-                  {errors.image && (
-                    <div className="invalid-feedback">{errors.image}</div>
-                  )}
-                  <div className="form-text">
-                    Leave empty to keep current image
-                  </div>
-                </div>
-
-                <div className="col-12">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      name="productAvailable"
-                      id="productAvailable"
-                      checked={updateProduct.productAvailable}
-                      onChange={(e) =>
-                        setUpdateProduct({
-                          ...updateProduct,
-                          productAvailable: e.target.checked,
-                        })
-                      }
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor="productAvailable"
-                    >
-                      Product Available
-                    </label>
-                  </div>
-                </div>
-
-                <div className="col-12 mt-4">
-                  {loading ? (
-                    <button className="btn btn-primary" type="button" disabled>
-                      <span
-                        className="spinner-border spinner-border-sm me-2"
-                        role="status"
-                        aria-hidden="true"
-                      ></span>
-                      Updating...
-                    </button>
-                  ) : (
-                    <button type="submit" className="btn btn-primary">
-                      Update Product
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary ms-2"
-                    onClick={() => navigate("/")}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
+    <div className="container mx-auto px-4 mt-24 pb-12 max-w-2xl">
+      <div className="flex items-center gap-3 mb-6">
+        <Button variant="ghost" size="sm" asChild className="text-muted-foreground">
+          <Link to="/">
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Link>
+        </Button>
+        <div>
+          <h4 className="text-xl font-bold">Update Product</h4>
+          <p className="text-muted-foreground text-sm">Edit the details of this listing.</p>
         </div>
       </div>
+
+      <form onSubmit={handleSubmit} noValidate>
+        <Section icon={Info} title="Basic Information">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <Label>Product Name</Label>
+              <Input
+                name="name"
+                value={updateProduct.name}
+                onChange={handleChange}
+                className="mt-1"
+              />
+              {errors.name && <p className="text-destructive text-xs mt-1">{errors.name}</p>}
+            </div>
+            <div>
+              <Label>Brand</Label>
+              <Input
+                name="brand"
+                value={updateProduct.brand}
+                onChange={handleChange}
+                className="mt-1"
+              />
+              {errors.brand && <p className="text-destructive text-xs mt-1">{errors.brand}</p>}
+            </div>
+            <div className="md:col-span-2">
+              <Label>Description</Label>
+              <Textarea
+                name="description"
+                value={updateProduct.description}
+                onChange={handleChange}
+                className="mt-1 resize-none"
+                rows={3}
+              />
+              {errors.description && (
+                <p className="text-destructive text-xs mt-1">{errors.description}</p>
+              )}
+            </div>
+          </div>
+        </Section>
+
+        <Section icon={IndianRupee} title="Pricing & Inventory">
+          <div className="grid md:grid-cols-3 gap-4">
+            <div>
+              <Label>Price (₹)</Label>
+              <Input
+                type="number"
+                name="price"
+                value={updateProduct.price}
+                onChange={handleChange}
+                className="mt-1"
+                min="0.01"
+                step="0.01"
+              />
+              {errors.price && <p className="text-destructive text-xs mt-1">{errors.price}</p>}
+            </div>
+            <div>
+              <Label>Category</Label>
+              <Select
+                value={updateProduct.category}
+                onValueChange={(v) => {
+                  setUpdateProduct({ ...updateProduct, category: v });
+                  setErrors({ ...errors, category: null });
+                }}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORIES.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.category && (
+                <p className="text-destructive text-xs mt-1">{errors.category}</p>
+              )}
+            </div>
+            <div>
+              <Label>Stock Quantity</Label>
+              <Input
+                type="number"
+                name="stockQuantity"
+                value={updateProduct.stockQuantity}
+                onChange={handleChange}
+                className="mt-1"
+                min="0"
+              />
+              {errors.stockQuantity && (
+                <p className="text-destructive text-xs mt-1">{errors.stockQuantity}</p>
+              )}
+            </div>
+          </div>
+          <div
+            className={`flex items-center gap-4 mt-4 p-4 rounded-xl border transition-colors ${updateProduct.productAvailable ? "bg-emerald-50 border-emerald-200" : "bg-muted border-border"}`}
+          >
+            <Switch
+              id="productAvailable"
+              checked={updateProduct.productAvailable}
+              onCheckedChange={(v) => setUpdateProduct({ ...updateProduct, productAvailable: v })}
+            />
+            <label htmlFor="productAvailable" className="cursor-pointer">
+              <p className="font-medium text-sm">Mark as available</p>
+              <p className="text-xs text-muted-foreground">
+                {updateProduct.productAvailable ? "Visible and purchasable" : "Hidden from customers"}
+              </p>
+            </label>
+          </div>
+        </Section>
+
+        <Section icon={ImageIcon} title="Product Image">
+          <label
+            htmlFor="imageUpload"
+            className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-all border-primary/40 bg-accent/20 hover:border-primary"
+          >
+            {image ? (
+              <div className="text-center">
+                <img
+                  src={URL.createObjectURL(image)}
+                  alt={product.name}
+                  className="max-h-44 object-contain rounded-lg mb-3 mx-auto"
+                />
+                <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+                  <RotateCw className="h-3.5 w-3.5" />
+                  Click to change
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Click to upload an image</p>
+            )}
+          </label>
+          <input
+            id="imageUpload"
+            type="file"
+            className="hidden"
+            accept="image/png,image/jpeg"
+            onChange={handleImageChange}
+          />
+          {errors.image && <p className="text-destructive text-xs mt-2">{errors.image}</p>}
+          <p className="text-xs text-muted-foreground mt-2">Leave unchanged to keep the current image.</p>
+        </Section>
+
+        <div className="flex justify-end gap-3">
+          <Button type="button" variant="outline" onClick={() => navigate("/")}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Updating…
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                Update Product
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };

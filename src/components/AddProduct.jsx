@@ -1,18 +1,19 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowLeft,
-  faCirclePlus,
-  faIndianRupeeSign,
-  faImage,
-  faCloudArrowUp,
-  faCircleInfo,
-  faRotate,
-  faSpinner,
-} from "@fortawesome/free-solid-svg-icons";
+  AlertCircle,
+  ArrowLeft,
+  CloudUpload,
+  IndianRupee,
+  Info,
+  Loader2,
+  PlusCircle,
+  RotateCw,
+  Sparkles,
+  Image as ImageIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,10 +36,10 @@ const CATEGORIES = [
   "Fashion",
 ];
 
-const Section = ({ icon, title, children }) => (
+const Section = ({ icon: Icon, title, children }) => (
   <div className="bg-card rounded-2xl border border-border p-6 mb-4">
     <p className="font-semibold text-sm mb-4 pb-3 border-b border-border flex items-center gap-2">
-      <FontAwesomeIcon icon={icon} className="text-primary" />
+      <Icon className="h-4 w-4 text-primary" />
       {title}
     </p>
     {children}
@@ -164,10 +165,7 @@ const AddProduct = () => {
         setLoading(false);
       });
   };
-  // Check if AI generation features are available
   const canGenerateDescription = product.name.trim() && product.category;
-  const canGenerateImage =
-    product.name.trim() && product.category && product.description.trim();
 
   return (
     <div className="container mx-auto px-4 mt-24 pb-12 max-w-2xl">
@@ -179,7 +177,7 @@ const AddProduct = () => {
           className="text-muted-foreground"
         >
           <Link to="/">
-            <FontAwesomeIcon icon={faArrowLeft} className="mr-1" />
+            <ArrowLeft className="h-4 w-4" />
             Back
           </Link>
         </Button>
@@ -192,7 +190,7 @@ const AddProduct = () => {
       </div>
 
       <form onSubmit={submitHandler} noValidate>
-        <Section icon={faCircleInfo} title="Basic Information">
+        <Section icon={Info} title="Basic Information">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <Label>Product Name</Label>
@@ -220,12 +218,13 @@ const AddProduct = () => {
                 <p className="text-destructive text-xs mt-1">{errors.brand}</p>
               )}
             </div>
-            <div className="col-12">
-              <div className="d-flex justify-content-between align-items-center mb-2">
+            <div className="md:col-span-2">
+              <div className="flex items-center justify-between mb-2">
                 <Label>Description</Label>
-                <button
+                <Button
                   type="button"
-                  className={`btn btn-sm btn-outline-primary ${!canGenerateDescription ? "disabled" : ""}`}
+                  variant="outline"
+                  size="sm"
                   onClick={generateDescription}
                   disabled={!canGenerateDescription || generatingDescription}
                   title={
@@ -236,39 +235,35 @@ const AddProduct = () => {
                 >
                   {generatingDescription ? (
                     <>
-                      <span
-                        className="spinner-border spinner-border-sm me-1"
-                        role="status"
-                        aria-hidden="true"
-                      ></span>
+                      <Loader2 className="h-4 w-4 animate-spin" />
                       Generating...
                     </>
                   ) : (
                     <>
-                      <i className="bi bi-robot me-1"></i>
+                      <Sparkles className="h-4 w-4" />
                       Generate with AI
                     </>
                   )}
-                </button>
-                <Textarea
-                  name="description"
-                  placeholder="Describe the product…"
-                  value={product.description}
-                  onChange={handleChange}
-                  className="mt-1 resize-none"
-                  rows={3}
-                />
-                {errors.description && (
-                  <p className="text-destructive text-xs mt-1">
-                    {errors.description}
-                  </p>
-                )}
+                </Button>
               </div>
+              <Textarea
+                name="description"
+                placeholder="Describe the product…"
+                value={product.description}
+                onChange={handleChange}
+                className="resize-none"
+                rows={3}
+              />
+              {errors.description && (
+                <p className="text-destructive text-xs mt-1">
+                  {errors.description}
+                </p>
+              )}
             </div>
           </div>
         </Section>
 
-        <Section icon={faIndianRupeeSign} title="Pricing & Inventory">
+        <Section icon={IndianRupee} title="Pricing & Inventory">
           <div className="grid md:grid-cols-3 gap-4">
             <div>
               <Label>Price (₹)</Label>
@@ -348,7 +343,7 @@ const AddProduct = () => {
           </div>
         </Section>
 
-        <Section icon={faImage} title="Product Image">
+        <Section icon={ImageIcon} title="Product Image">
           <label
             htmlFor="imageUpload"
             className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-all ${imagePreview ? "border-primary/40 bg-accent/20" : "border-border bg-muted/50 hover:border-primary hover:bg-accent/20"}`}
@@ -360,17 +355,14 @@ const AddProduct = () => {
                   alt="Preview"
                   className="max-h-44 object-contain rounded-lg mb-3 mx-auto"
                 />
-                <p className="text-sm text-muted-foreground">
-                  <FontAwesomeIcon icon={faRotate} className="mr-1" />
+                <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+                  <RotateCw className="h-3.5 w-3.5" />
                   Click to change
                 </p>
               </div>
             ) : (
               <div className="text-center">
-                <FontAwesomeIcon
-                  icon={faCloudArrowUp}
-                  className="text-3xl text-muted-foreground mb-2"
-                />
+                <CloudUpload className="h-9 w-9 text-muted-foreground mb-2 mx-auto" />
                 <p className="font-medium text-muted-foreground">
                   Click to upload
                 </p>
@@ -388,8 +380,8 @@ const AddProduct = () => {
             onChange={handleImageChange}
           />
           {errors.image && (
-            <p className="text-destructive text-xs mt-2">
-              <FontAwesomeIcon icon={faCircleInfo} className="mr-1" />
+            <p className="text-destructive text-xs mt-2 flex items-center gap-1">
+              <AlertCircle className="h-3.5 w-3.5" />
               {errors.image}
             </p>
           )}
@@ -402,15 +394,12 @@ const AddProduct = () => {
           <Button type="submit" disabled={loading}>
             {loading ? (
               <>
-                <FontAwesomeIcon
-                  icon={faSpinner}
-                  className="mr-2 animate-spin"
-                />
+                <Loader2 className="h-4 w-4 animate-spin" />
                 Adding…
               </>
             ) : (
               <>
-                <FontAwesomeIcon icon={faCirclePlus} className="mr-2" />
+                <PlusCircle className="h-4 w-4" />
                 Add Product
               </>
             )}

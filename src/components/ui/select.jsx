@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Select         = SelectPrimitive.Root;
@@ -19,7 +18,7 @@ const SelectTrigger = React.forwardRef(({ className, children, ...props }, ref) 
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <FontAwesomeIcon icon={faChevronDown} className="opacity-50 text-xs" />
+      <ChevronDown className="h-4 w-4 opacity-50" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -56,7 +55,7 @@ const SelectItem = React.forwardRef(({ className, children, ...props }, ref) => 
   >
     <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <FontAwesomeIcon icon={faCheck} className="text-xs" />
+        <Check className="h-3.5 w-3.5" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

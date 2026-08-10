@@ -1,29 +1,48 @@
-import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, NavLink as RouterNavLink, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ChevronDown,
+  Home as HomeIcon,
+  Menu,
+  Package,
+  PlusCircle,
+  Search,
+  ShoppingCart,
+  Store,
+  X,
+} from "lucide-react";
 import AppContext from "../Context/Context";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+
+const CATEGORIES = [
+  "All",
+  "Electronics",
+  "Clothing",
+  "Books",
+  "Home & Kitchen",
+  "Sports",
+  "Toys",
+  "Beauty",
+  "Automotive",
+];
 
 const Navbar = ({ selectedCategory, setSelectedCategory }) => {
   const { cart } = useContext(AppContext);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [showCategories, setShowCategories] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const categories = [
-    "All",
-    "Electronics",
-    "Clothing",
-    "Books",
-    "Home & Kitchen",
-    "Sports",
-    "Toys",
-    "Beauty",
-    "Automotive",
-  ];
+  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   const handleCategorySelect = (cat) => {
     setSelectedCategory(cat === "All" ? "" : cat);
-    setShowCategories(false);
     setMenuOpen(false);
     navigate("/");
   };
@@ -34,218 +53,156 @@ const Navbar = ({ selectedCategory, setSelectedCategory }) => {
     navigate("/");
   };
 
-  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
-
   return (
-    <>
-      <nav style={{
-        background: "white",
-        borderBottom: "1px solid hsl(214, 32%, 91%)",
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-      }}>
-        {/* Top bar */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0.65rem 1rem",
-          maxWidth: "1280px",
-          margin: "0 auto",
-        }}>
-          {/* Logo */}
-          <Link to="/" style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.4rem",
-            textDecoration: "none",
-            fontWeight: 700,
-            fontSize: "1.15rem",
-            color: "hsl(243, 75%, 59%)",
-            whiteSpace: "nowrap",
-          }}>
-            <span>🛒</span>
-            ShopEase
-          </Link>
+    <nav className="sticky top-0 z-50 border-b border-border/80 bg-background/80 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+        <Link to="/" className="flex items-center gap-2 text-lg font-bold text-primary">
+          <Store className="h-6 w-6" />
+          ShopEase
+        </Link>
 
-          {/* Desktop nav links */}
-          <div className="d-none d-md-flex" style={{ alignItems: "center", gap: "0.15rem" }}>
-            <NavLink to="/">🏠 Home</NavLink>
+        <div className="hidden items-center gap-1 md:flex">
+          <NavItem to="/">
+            <HomeIcon className="h-4 w-4" />
+            Home
+          </NavItem>
 
-            <div style={{ position: "relative" }}>
-              <button
-                onClick={() => setShowCategories(!showCategories)}
-                style={navBtnStyle}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "hsl(210, 40%, 95%)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-              >
-                📦 Categories ▾
-              </button>
-              {showCategories && (
-                <DropdownMenu categories={categories} onSelect={handleCategorySelect} />
-              )}
-            </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <Package className="h-4 w-4" />
+              Categories
+              <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              {CATEGORIES.map((cat) => (
+                <DropdownMenuItem key={cat} onSelect={() => handleCategorySelect(cat)}>
+                  {cat}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-            <NavLink to="/add-product">➕ Add Product</NavLink>
-            <NavLink to="/order">📋 Orders</NavLink>
-          </div>
-
-          {/* Desktop search + cart */}
-          <div className="d-none d-md-flex" style={{ alignItems: "center", gap: "0.75rem" }}>
-            <SearchForm value={searchQuery} onChange={setSearchQuery} onSubmit={handleSearch} />
-            <CartLink count={cartCount} />
-          </div>
-
-          {/* Mobile: cart icon + hamburger */}
-          <div className="d-flex d-md-none" style={{ alignItems: "center", gap: "0.5rem" }}>
-            <CartLink count={cartCount} />
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              style={{
-                background: "transparent",
-                border: "1px solid hsl(214, 32%, 91%)",
-                borderRadius: "0.5rem",
-                padding: "0.35rem 0.6rem",
-                cursor: "pointer",
-                fontSize: "1.1rem",
-                lineHeight: 1,
-              }}
-              aria-label="Toggle menu"
-            >
-              {menuOpen ? "✕" : "☰"}
-            </button>
-          </div>
+          <NavItem to="/add-product">
+            <PlusCircle className="h-4 w-4" />
+            Add Product
+          </NavItem>
+          <NavItem to="/order">
+            <Package className="h-4 w-4" />
+            Orders
+          </NavItem>
         </div>
 
-        {/* Mobile dropdown menu */}
-        {menuOpen && (
-          <div className="d-md-none" style={{
-            borderTop: "1px solid hsl(214, 32%, 91%)",
-            padding: "0.75rem 1rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.25rem",
-          }}>
-            <MobileNavLink to="/" onClick={() => setMenuOpen(false)}>🏠 Home</MobileNavLink>
+        <div className="hidden items-center gap-3 md:flex">
+          <SearchInput value={searchQuery} onChange={setSearchQuery} onSubmit={handleSearch} />
+          <CartLink count={cartCount} />
+        </div>
 
-            <button
-              onClick={() => setShowCategories(!showCategories)}
-              style={mobileNavBtnStyle}
-            >
-              📦 Categories {showCategories ? "▲" : "▾"}
-            </button>
-            {showCategories && (
-              <div style={{ paddingLeft: "1rem", display: "flex", flexDirection: "column", gap: "0.1rem" }}>
-                {categories.map((cat) => (
+        <div className="flex items-center gap-2 md:hidden">
+          <CartLink count={cartCount} />
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="Toggle menu"
+            className="rounded-lg border border-border p-2 text-foreground transition-colors hover:bg-accent"
+          >
+            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="overflow-hidden border-t border-border md:hidden"
+          >
+            <div className="flex flex-col gap-1 px-4 py-3">
+              <MobileNavItem to="/" onClick={() => setMenuOpen(false)}>
+                <HomeIcon className="h-4 w-4" />
+                Home
+              </MobileNavItem>
+              <MobileNavItem to="/add-product" onClick={() => setMenuOpen(false)}>
+                <PlusCircle className="h-4 w-4" />
+                Add Product
+              </MobileNavItem>
+              <MobileNavItem to="/order" onClick={() => setMenuOpen(false)}>
+                <Package className="h-4 w-4" />
+                Orders
+              </MobileNavItem>
+
+              <p className="mt-2 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Categories
+              </p>
+              <div className="grid grid-cols-2 gap-1">
+                {CATEGORIES.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => handleCategorySelect(cat)}
-                    style={{
-                      ...mobileNavBtnStyle,
-                      fontSize: "0.85rem",
-                      color: "hsl(215, 28%, 30%)",
-                    }}
+                    className="rounded-lg px-3 py-2 text-left text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground"
                   >
                     {cat}
                   </button>
                 ))}
               </div>
-            )}
 
-            <MobileNavLink to="/add-product" onClick={() => setMenuOpen(false)}>➕ Add Product</MobileNavLink>
-            <MobileNavLink to="/order" onClick={() => setMenuOpen(false)}>📋 Orders</MobileNavLink>
-
-            <form onSubmit={handleSearch} style={{ marginTop: "0.5rem" }}>
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.45rem 0.75rem",
-                  borderRadius: "0.5rem",
-                  border: "1px solid hsl(214, 32%, 91%)",
-                  fontSize: "0.875rem",
-                  outline: "none",
-                  boxSizing: "border-box",
-                }}
-              />
-            </form>
-          </div>
+              <form onSubmit={handleSearch} className="relative mt-3">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-lg border border-input bg-transparent py-2 pl-9 pr-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </form>
+            </div>
+          </motion.div>
         )}
-      </nav>
-    </>
+      </AnimatePresence>
+    </nav>
   );
 };
 
-const navLinkStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "0.35rem",
-  padding: "0.4rem 0.7rem",
-  borderRadius: "0.5rem",
-  textDecoration: "none",
-  color: "hsl(215, 28%, 12%)",
-  fontSize: "0.875rem",
-  fontWeight: 500,
-};
-
-const navBtnStyle = {
-  ...navLinkStyle,
-  border: "none",
-  background: "transparent",
-  cursor: "pointer",
-};
-
-const mobileNavBtnStyle = {
-  display: "block",
-  width: "100%",
-  padding: "0.5rem 0.5rem",
-  border: "none",
-  background: "transparent",
-  textAlign: "left",
-  cursor: "pointer",
-  fontSize: "0.9rem",
-  fontWeight: 500,
-  color: "hsl(215, 28%, 12%)",
-  borderRadius: "0.4rem",
-};
-
-const NavLink = ({ to, children }) => (
-  <Link
+const NavItem = ({ to, children }) => (
+  <RouterNavLink
     to={to}
-    style={navLinkStyle}
-    onMouseEnter={(e) => (e.currentTarget.style.background = "hsl(210, 40%, 95%)")}
-    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+    className={({ isActive }) =>
+      cn(
+        "flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground",
+        isActive && "bg-accent text-accent-foreground"
+      )
+    }
   >
     {children}
-  </Link>
+  </RouterNavLink>
 );
 
-const MobileNavLink = ({ to, children, onClick }) => (
-  <Link to={to} onClick={onClick} style={mobileNavBtnStyle}>
+const MobileNavItem = ({ to, children, onClick }) => (
+  <RouterNavLink
+    to={to}
+    onClick={onClick}
+    className={({ isActive }) =>
+      cn(
+        "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground",
+        isActive && "bg-accent text-accent-foreground"
+      )
+    }
+  >
     {children}
-  </Link>
+  </RouterNavLink>
 );
 
-const SearchForm = ({ value, onChange, onSubmit }) => (
-  <form onSubmit={onSubmit} style={{ display: "flex" }}>
+const SearchInput = ({ value, onChange, onSubmit }) => (
+  <form onSubmit={onSubmit} className="relative">
+    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
     <input
       type="text"
       placeholder="Search products..."
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      style={{
-        padding: "0.4rem 0.75rem",
-        borderRadius: "0.5rem",
-        border: "1px solid hsl(214, 32%, 91%)",
-        fontSize: "0.875rem",
-        outline: "none",
-        width: "200px",
-        color: "hsl(215, 28%, 12%)",
-      }}
+      className="w-56 rounded-lg border border-input bg-transparent py-2 pl-9 pr-3 text-sm shadow-sm outline-none transition-all focus-visible:w-64 focus-visible:ring-2 focus-visible:ring-ring"
     />
   </form>
 );
@@ -253,72 +210,24 @@ const SearchForm = ({ value, onChange, onSubmit }) => (
 const CartLink = ({ count }) => (
   <Link
     to="/cart"
-    style={{
-      display: "flex",
-      alignItems: "center",
-      gap: "0.4rem",
-      padding: "0.4rem 0.9rem",
-      borderRadius: "0.5rem",
-      textDecoration: "none",
-      background: "hsl(243, 75%, 59%)",
-      color: "white",
-      fontSize: "0.875rem",
-      fontWeight: 500,
-      whiteSpace: "nowrap",
-    }}
+    className="relative flex items-center gap-2 rounded-lg bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:-translate-y-px hover:bg-primary/90"
   >
-    🛒 Cart
-    {count > 0 && (
-      <span style={{
-        background: "#ef4444",
-        color: "white",
-        borderRadius: "9999px",
-        fontSize: "0.7rem",
-        padding: "0 0.4rem",
-        fontWeight: 700,
-        minWidth: "1.2rem",
-        textAlign: "center",
-      }}>
-        {count}
-      </span>
-    )}
+    <ShoppingCart className="h-4 w-4" />
+    <span className="hidden sm:inline">Cart</span>
+    <AnimatePresence>
+      {count > 0 && (
+        <motion.span
+          key={count}
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.5, opacity: 0 }}
+          className="absolute -right-2 -top-2 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-destructive px-1 text-[0.7rem] font-bold text-destructive-foreground"
+        >
+          {count}
+        </motion.span>
+      )}
+    </AnimatePresence>
   </Link>
-);
-
-const DropdownMenu = ({ categories, onSelect }) => (
-  <div style={{
-    position: "absolute",
-    top: "calc(100% + 4px)",
-    left: 0,
-    background: "white",
-    border: "1px solid hsl(214, 32%, 91%)",
-    borderRadius: "0.5rem",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-    minWidth: "160px",
-    zIndex: 200,
-  }}>
-    {categories.map((cat) => (
-      <button
-        key={cat}
-        onClick={() => onSelect(cat)}
-        style={{
-          display: "block",
-          width: "100%",
-          padding: "0.5rem 1rem",
-          border: "none",
-          background: "transparent",
-          textAlign: "left",
-          cursor: "pointer",
-          fontSize: "0.875rem",
-          color: "hsl(215, 28%, 12%)",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = "hsl(210, 40%, 95%)")}
-        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-      >
-        {cat}
-      </button>
-    ))}
-  </div>
 );
 
 export default Navbar;

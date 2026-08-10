@@ -1,14 +1,17 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useContext, useEffect } from "react";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { ArrowLeft, Pencil, ShoppingCart, Trash2 } from "lucide-react";
 import AppContext from "../Context/Context";
 import axios from "../axios";
 import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Product = () => {
   const { id } = useParams();
-  const { data, addToCart, removeFromCart, cart, refreshData } =
-    useContext(AppContext);
+  const { addToCart, removeFromCart, refreshData } = useContext(AppContext);
   const [product, setProduct] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
   const navigate = useNavigate();
@@ -19,7 +22,6 @@ const Product = () => {
       try {
         const response = await axios.get(`${baseUrl}/api/product/${id}`);
         setProduct(response.data);
-        console.log(response.data);
         if (response.data.imageName) {
           fetchImage();
         }
@@ -35,13 +37,12 @@ const Product = () => {
       setImageUrl(URL.createObjectURL(response.data));
     };
     fetchProduct();
-  }, [id]);
+  }, [id, baseUrl]);
 
   const deleteProduct = async () => {
     try {
       await axios.delete(`${baseUrl}/api/product/${id}`);
       removeFromCart(id);
-      console.log("Product deleted successfully");
       toast.success("Product deleted successfully");
       refreshData();
       navigate("/");
@@ -54,81 +55,94 @@ const Product = () => {
     navigate(`/product/update/${id}`);
   };
 
-  const handlAddToCart = () => {
+  const handleAddToCart = () => {
     addToCart(product);
     toast.success("Product added to cart");
   };
 
   if (!product) {
     return (
-      <div className="container mt-5 pt-5">
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{ height: "400px" }}
-        >
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+      <div className="mx-auto max-w-5xl px-4 py-10">
+        <div className="grid gap-8 md:grid-cols-2">
+          <Skeleton className="h-80 w-full rounded-2xl" />
+          <div className="space-y-4">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-10 w-40" />
           </div>
         </div>
       </div>
     );
   }
 
+  const outOfStock = !product.productAvailable || product.stockQuantity === 0;
+
   return (
-    <div className="container mt-5 pt-3 pt-md-5 px-3">
-      <div className="row g-4">
-        {/* Product Image */}
-        <div className="col-12 col-md-6">
-          <div className="card border-0">
-            <img
-              src={imageUrl}
-              alt={product.name}
-              className="card-img-top img-fluid"
-              style={{ maxHeight: "400px", objectFit: "contain" }}
-            />
-          </div>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="mx-auto max-w-5xl px-4 py-8 sm:px-6"
+    >
+      <Button variant="ghost" size="sm" className="mb-4 -ml-2 text-muted-foreground" onClick={() => navigate("/")}>
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </Button>
+
+      <div className="grid gap-8 md:grid-cols-2">
+        <div className="flex items-center justify-center rounded-2xl border border-border bg-muted/40 p-6">
+          <img
+            src={imageUrl}
+            alt={product.name}
+            className="max-h-96 w-full object-contain"
+          />
         </div>
 
-        {/* Product Details */}
-        <div className="col-12 col-md-6">
-          <span className="badge bg-secondary mb-2">{product.category}</span>
+        <div>
+          <Badge variant="secondary" className="mb-3">
+            {product.category}
+          </Badge>
 
-          <h2 className="text-capitalize mb-1 fs-4 fs-md-2">{product.name}</h2>
-          <p className="text-muted fst-italic mb-3">~ {product.brand}</p>
+          <h1 className="mb-1 text-2xl font-bold capitalize">{product.name}</h1>
+          <p className="mb-4 italic text-muted-foreground">~ {product.brand}</p>
 
-          <div className="mb-3">
-            <h6 className="mb-1">Product Description</h6>
-            <p className="text-muted">{product.description}</p>
+          <div className="mb-4">
+            <h3 className="mb-1 text-sm font-semibold">Product Description</h3>
+            <p className="text-sm text-muted-foreground">{product.description}</p>
           </div>
 
-          <h3 className="fw-bold mb-3">₹ {product.price}</h3>
+          <p className="mb-4 text-3xl font-bold">₹{product.price}</p>
 
-          <div className="d-grid gap-2 mb-3">
-            <button
-              className="btn btn-primary btn-lg"
-              onClick={handlAddToCart}
-              disabled={!product.productAvailable || product.stockQuantity === 0}
-            >
-              {product.stockQuantity !== 0 ? "Add to Cart" : "Out of Stock"}
-            </button>
-          </div>
+          <Button
+            size="lg"
+            className="mb-4 w-full sm:w-auto"
+            disabled={outOfStock}
+            onClick={handleAddToCart}
+          >
+            <ShoppingCart className="h-4 w-4" />
+            {product.stockQuantity !== 0 ? "Add to Cart" : "Out of Stock"}
+          </Button>
 
-          <p className="mb-4">
-            <span className="me-2">Stock Available:</span>
-            <span className="fw-bold text-success">{product.stockQuantity}</span>
+          <p className="mb-6 text-sm">
+            Stock Available:{" "}
+            <span className="font-bold text-emerald-600">{product.stockQuantity}</span>
           </p>
 
-          <div className="d-grid gap-2 d-sm-flex">
-            <button className="btn btn-outline-primary" type="button" onClick={handleEditClick}>
-              <i className="bi bi-pencil me-1"></i>Update
-            </button>
-            <button className="btn btn-outline-danger" type="button" onClick={deleteProduct}>
-              <i className="bi bi-trash me-1"></i>Delete
-            </button>
+          <div className="flex flex-wrap gap-3">
+            <Button variant="outline" onClick={handleEditClick}>
+              <Pencil className="h-4 w-4" />
+              Update
+            </Button>
+            <Button variant="outline" className="text-destructive hover:bg-destructive/10" onClick={deleteProduct}>
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </Button>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
