@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "react-toastify";
 
 const Cart = () => {
-  const { cart, removeFromCart, clearCart } = useContext(AppContext);
+  const { cart, removeFromCart, clearCart, user } = useContext(AppContext);
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -65,7 +65,7 @@ const Cart = () => {
 
       await axios.post(`${baseUrl}/api/orders/place`, orderRequest);
 
-      toast.success("Order placed successfully!");
+      toast.success(`Order placed! Confirmation sent to ${email}`);
       clearCart();
       setCartItems([]);
       setShowModal(false);
@@ -220,6 +220,7 @@ const Cart = () => {
         cartItems={cartItems}
         totalPrice={totalPrice}
         handleCheckout={handleCheckout}
+        user={user}
       />
     </div>
   );

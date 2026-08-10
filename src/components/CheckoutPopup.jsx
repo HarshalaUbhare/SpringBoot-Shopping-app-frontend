@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,9 +8,16 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-const CheckoutPopup = ({ show, handleClose, cartItems, totalPrice, handleCheckout }) => {
+const CheckoutPopup = ({ show, handleClose, cartItems, totalPrice, handleCheckout, user }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    if (show && user) {
+      setName(user.name || "");
+      setEmail(user.email || "");
+    }
+  }, [show, user]);
   const [errors, setErrors] = useState({});
 
   const validate = () => {
