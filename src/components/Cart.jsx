@@ -52,36 +52,26 @@ const Cart = () => {
     setCartItems((prev) => prev.filter((item) => item.id !== itemId));
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (customerName, email) => {
     try {
-      for (const item of cartItems) {
-        const { imageUrl, imageName, imageData, imageType, quantity, ...rest } = item;
-        const updatedStockQuantity = item.stockQuantity - item.quantity;
+      const orderRequest = {
+        customerName,
+        email,
+        items: cartItems.map((item) => ({
+          productId: item.id,
+          quantity: item.quantity,
+        })),
+      };
 
-        const updatedProductData = {
-          ...rest,
-          stockQuantity: updatedStockQuantity,
-        };
+      await axios.post(`${baseUrl}/api/orders/place`, orderRequest);
 
-        const cartProduct = new FormData();
-        cartProduct.append(
-          "product",
-          new Blob([JSON.stringify(updatedProductData)], { type: "application/json" })
-        );
-
-        await axios
-          .put(`${baseUrl}/api/product/${item.id}`, cartProduct, {
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-          .catch((error) => {
-            console.error("Error updating product:", error);
-          });
-      }
+      toast.success("Order placed successfully!");
       clearCart();
       setCartItems([]);
       setShowModal(false);
     } catch (error) {
-      console.log("error during checkout", error);
+      console.error("Error placing order:", error);
+      toast.error("Failed to place order. Please try again.");
     }
   };
 
