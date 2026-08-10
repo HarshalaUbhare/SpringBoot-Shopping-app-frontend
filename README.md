@@ -47,3 +47,23 @@ npm run lint      # run ESLint
 ## Auth
 
 Login supports OAuth2 via Google and GitHub, redirecting to the backend's `/oauth2/authorization/{provider}` endpoint; [src/components/AuthCallback.jsx](src/components/AuthCallback.jsx) handles the callback and JWT storage.
+
+
+## App preview 
+
+Login page
+<img width="1437" height="828" alt="Screenshot 2026-08-10 at 7 38 55 PM" src="https://github.com/user-attachments/assets/88b5fdf4-f7f9-4d71-8b18-a7196793f8be" />
+
+DashBoard 
+<img width="1450" height="834" alt="Screenshot 2026-08-10 at 7 39 27 PM" src="https://github.com/user-attachments/assets/21552b00-7ff1-4c4c-9a0b-61ef4c5bb4fb" />
+
+Add Product
+<img width="1465" height="836" alt="Screenshot 2026-08-10 at 7 39 50 PM" src="https://github.com/user-attachments/assets/16a184b8-69d5-4770-9d7c-ecd69e2de806" />
+
+Cart
+<img width="1447" height="836" alt="Screenshot 2026-08-10 at 7 40 27 PM" src="https://github.com/user-attachments/assets/f66119ed-8a18-40ab-b89b-7deb46e7feaa" />
+
+All Orders
+<img width="1452" height="835" alt="Screenshot 2026-08-10 at 7 41 06 PM" src="https://github.com/user-attachments/assets/9c7fea34-8368-44fe-991a-b58776727489" />
+
+
