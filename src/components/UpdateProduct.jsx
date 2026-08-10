@@ -131,9 +131,9 @@ const UpdateProduct = () => {
   }
 
   return (
-    <div className="container mt-5 pt-5">
+    <div className="container mt-5 pt-3 pt-md-4 px-2 px-md-3">
       <div className="row justify-content-center">
-        <div className="col-md-10">
+        <div className="col-12 col-md-10">
           <div className="card shadow">
             <div className="card-body">
               <h2 className="text-center mb-4">Update Product</h2>

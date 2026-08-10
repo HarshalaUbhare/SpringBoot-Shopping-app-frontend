@@ -115,8 +115,8 @@ const Home = ({ selectedCategory }) => {
         </div>
       </div>
 
-      <div className="container mt-5 pt-5">
-        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+      <div className="container mt-5 pt-3 pt-md-4 px-2 px-md-3">
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
           {!filteredProducts || filteredProducts.length === 0 ? (
             <div className="col-12 text-center my-5">
               <h4>No Products Available</h4>

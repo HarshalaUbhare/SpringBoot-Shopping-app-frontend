@@ -75,32 +75,30 @@ const Product = () => {
   }
 
   return (
-    <div className="container mt-5 pt-5">
-      <div className="row">
+    <div className="container mt-5 pt-3 pt-md-5 px-3">
+      <div className="row g-4">
         {/* Product Image */}
-        <div className="col-md-6 mb-4">
+        <div className="col-12 col-md-6">
           <div className="card border-0">
             <img
               src={imageUrl}
               alt={product.name}
               className="card-img-top img-fluid"
-              style={{ maxHeight: "500px", objectFit: "contain" }}
+              style={{ maxHeight: "400px", objectFit: "contain" }}
             />
           </div>
         </div>
 
         {/* Product Details */}
-        <div className="col-md-6">
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <span className="badge bg-secondary">{product.category}</span>
-          </div>
+        <div className="col-12 col-md-6">
+          <span className="badge bg-secondary mb-2">{product.category}</span>
 
-          <h2 className="text-capitalize mb-1">{product.name}</h2>
-          <p className="text-muted fst-italic mb-4">~ {product.brand}</p>
+          <h2 className="text-capitalize mb-1 fs-4 fs-md-2">{product.name}</h2>
+          <p className="text-muted fst-italic mb-3">~ {product.brand}</p>
 
-          <div className="mb-4">
-            <h5 className="mb-2">Product Description:</h5>
-            <p>{product.description}</p>
+          <div className="mb-3">
+            <h6 className="mb-1">Product Description</h6>
+            <p className="text-muted">{product.description}</p>
           </div>
 
           <h3 className="fw-bold mb-3">₹ {product.price}</h3>
@@ -109,7 +107,7 @@ const Product = () => {
             <button
               className="btn btn-primary btn-lg"
               onClick={handlAddToCart}
-              disabled={!product.productAvailable || product.stockQuantity == 0}
+              disabled={!product.productAvailable || product.stockQuantity === 0}
             >
               {product.stockQuantity !== 0 ? "Add to Cart" : "Out of Stock"}
             </button>
@@ -117,28 +115,15 @@ const Product = () => {
 
           <p className="mb-4">
             <span className="me-2">Stock Available:</span>
-            <span className="fw-bold text-success">
-              {product.stockQuantity}
-            </span>
+            <span className="fw-bold text-success">{product.stockQuantity}</span>
           </p>
 
-          <div className="d-flex gap-2">
-            <button
-              className="btn btn-outline-primary"
-              type="button"
-              onClick={handleEditClick}
-            >
-              <i className="bi bi-pencil me-1"></i>
-              Update
+          <div className="d-grid gap-2 d-sm-flex">
+            <button className="btn btn-outline-primary" type="button" onClick={handleEditClick}>
+              <i className="bi bi-pencil me-1"></i>Update
             </button>
-
-            <button
-              className="btn btn-outline-danger"
-              type="button"
-              onClick={deleteProduct}
-            >
-              <i className="bi bi-trash me-1"></i>
-              Delete
+            <button className="btn btn-outline-danger" type="button" onClick={deleteProduct}>
+              <i className="bi bi-trash me-1"></i>Delete
             </button>
           </div>
         </div>
