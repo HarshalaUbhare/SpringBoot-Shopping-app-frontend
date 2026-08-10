@@ -21,9 +21,9 @@ const PageTransition = ({ children }) => (
   </motion.div>
 );
 
-const AnimatedRoutes = ({ selectedCategory }) => (
+const AnimatedRoutes = ({ selectedCategory, searchQuery }) => (
   <Routes>
-    <Route path="/" element={<PageTransition><Home selectedCategory={selectedCategory} /></PageTransition>} />
+    <Route path="/" element={<PageTransition><Home selectedCategory={selectedCategory} searchQuery={searchQuery} /></PageTransition>} />
     <Route path="/product/:id" element={<PageTransition><Product /></PageTransition>} />
     <Route path="/product/update/:id" element={<PageTransition><UpdateProduct /></PageTransition>} />
     <Route path="/add-product" element={<PageTransition><AddProduct /></PageTransition>} />
@@ -34,6 +34,7 @@ const AnimatedRoutes = ({ selectedCategory }) => (
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <AppProvider>
@@ -41,8 +42,10 @@ function App() {
         <Navbar
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
         />
-        <AnimatedRoutes selectedCategory={selectedCategory} />
+        <AnimatedRoutes selectedCategory={selectedCategory} searchQuery={searchQuery} />
         <ToastContainer position="top-right" autoClose={3000} />
       </BrowserRouter>
     </AppProvider>

@@ -17,7 +17,7 @@ const convertBase64ToDataURL = (base64String, mimeType = "image/jpeg") => {
   return `data:${mimeType};base64,${base64String}`;
 };
 
-const Home = ({ selectedCategory }) => {
+const Home = ({ selectedCategory, searchQuery }) => {
   const { data, isError, addToCart, refreshData } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
 
@@ -35,9 +35,15 @@ const Home = ({ selectedCategory }) => {
   };
 
   const safeData = Array.isArray(data) ? data : [];
-  const filteredProducts = selectedCategory
-    ? safeData.filter((product) => product.category === selectedCategory)
-    : safeData;
+  const q = searchQuery?.trim().toLowerCase() || "";
+  const filteredProducts = safeData.filter((product) => {
+    const matchesCategory = !selectedCategory || product.category === selectedCategory;
+    const matchesSearch = !q ||
+      product.name?.toLowerCase().includes(q) ||
+      product.brand?.toLowerCase().includes(q) ||
+      product.description?.toLowerCase().includes(q);
+    return matchesCategory && matchesSearch;
+  });
 
   if (isError) {
     return (

@@ -33,16 +33,16 @@ const CATEGORIES = [
   "Automotive",
 ];
 
-const Navbar = ({ selectedCategory, setSelectedCategory }) => {
+const Navbar = ({ selectedCategory, setSelectedCategory, searchQuery, setSearchQuery }) => {
   const { cart } = useContext(AppContext);
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   const handleCategorySelect = (cat) => {
     setSelectedCategory(cat === "All" ? "" : cat);
+    setSearchQuery("");
     setMenuOpen(false);
     navigate("/");
   };
