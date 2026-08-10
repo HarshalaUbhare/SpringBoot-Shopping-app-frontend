@@ -28,12 +28,14 @@ import {
 import { Switch } from "@/components/ui/switch";
 
 const CATEGORIES = [
-  "Laptop",
-  "Headphone",
-  "Mobile",
   "Electronics",
+  "Clothing",
+  "Books",
+  "Home & Kitchen",
+  "Sports",
   "Toys",
-  "Fashion",
+  "Beauty",
+  "Automotive",
 ];
 
 const Section = ({ icon: Icon, title, children }) => (

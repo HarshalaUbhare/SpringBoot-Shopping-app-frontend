@@ -17,7 +17,16 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const CATEGORIES = ["Laptop", "Headphone", "Mobile", "Electronics", "Toys", "Fashion"];
+const CATEGORIES = [
+  "Electronics",
+  "Clothing",
+  "Books",
+  "Home & Kitchen",
+  "Sports",
+  "Toys",
+  "Beauty",
+  "Automotive",
+];
 
 const Section = ({ icon: Icon, title, children }) => (
   <div className="bg-card rounded-2xl border border-border p-6 mb-4">
