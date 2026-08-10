@@ -66,4 +66,6 @@ Cart
 All Orders
 <img width="1452" height="835" alt="Screenshot 2026-08-10 at 7 41 06 PM" src="https://github.com/user-attachments/assets/9c7fea34-8368-44fe-991a-b58776727489" />
 
+Order Confirmed
+<img width="1389" height="666" alt="Screenshot 2026-08-10 at 8 12 39 PM" src="https://github.com/user-attachments/assets/d9c5d159-e400-4860-8783-ce5482c305cf" />
 
