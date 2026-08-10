@@ -12,7 +12,7 @@ const Cart = () => {
   const [cartImage, setCartImage] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
-  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = (import.meta.env.VITE_BASE_URL || "").replace(/\/$/, "");
 
   useEffect(() => {
     setCartItems(cart.length ? cart : []);

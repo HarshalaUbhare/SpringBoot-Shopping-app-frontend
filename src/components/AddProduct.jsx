@@ -61,7 +61,7 @@ const AddProduct = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
-  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = (import.meta.env.VITE_BASE_URL || "").replace(/\/$/, "");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

@@ -12,7 +12,7 @@ const Product = () => {
   const [product, setProduct] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
   const navigate = useNavigate();
-  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = (import.meta.env.VITE_BASE_URL || "").replace(/\/$/, "");
 
   useEffect(() => {
     const fetchProduct = async () => {
