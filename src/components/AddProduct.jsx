@@ -13,6 +13,7 @@ import {
   PlusCircle,
   RotateCw,
   Sparkles,
+  Wand2,
   Image as ImageIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -69,6 +70,7 @@ const AddProduct = () => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [generatingDescription, setGeneratingDescription] = useState(false);
+  const [generatingImage, setGeneratingImage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
@@ -175,6 +177,33 @@ const AddProduct = () => {
         setLoading(false);
       });
   };
+  const generateImage = async () => {
+    if (!product.name.trim()) {
+      toast.warning("Please enter a product name first");
+      return;
+    }
+    setGeneratingImage(true);
+    try {
+      const prompt = `${product.name}${product.category ? ", " + product.category : ""}, product photo, white background, high quality`;
+      const response = await axios.post(
+        `${baseUrl}/api/image`,
+        null,
+        { params: { prompt }, responseType: "blob" }
+      );
+      const blob = new Blob([response.data], { type: "image/png" });
+      const file = new File([blob], `${product.name.replace(/\s+/g, "-")}-ai.png`, { type: "image/png" });
+      setImage(file);
+      setImagePreview(URL.createObjectURL(blob));
+      setErrors({ ...errors, image: null });
+      toast.success("Image generated with AI!");
+    } catch (err) {
+      console.error("Image generation error:", err);
+      toast.error("Failed to generate image. Check StabilityAI API key in Railway.");
+    } finally {
+      setGeneratingImage(false);
+    }
+  };
+
   const canGenerateDescription = product.name.trim() && product.category;
 
   return (
@@ -358,6 +387,23 @@ const AddProduct = () => {
         </Section>
 
         <Section icon={ImageIcon} title="Product Image">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs text-muted-foreground">Upload your own or generate with AI</p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={generateImage}
+              disabled={!product.name.trim() || generatingImage}
+              title={!product.name.trim() ? "Enter product name first" : "Generate image with StabilityAI"}
+            >
+              {generatingImage ? (
+                <><Loader2 className="h-4 w-4 animate-spin" />Generating...</>
+              ) : (
+                <><Wand2 className="h-4 w-4" />Generate with AI</>
+              )}
+            </Button>
+          </div>
           <label
             htmlFor="imageUpload"
             className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-all ${imagePreview ? "border-primary/40 bg-accent/20" : "border-white/10 bg-white/[0.02] hover:border-primary/50 hover:bg-accent/10"}`}
