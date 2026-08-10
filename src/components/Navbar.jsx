@@ -216,7 +216,7 @@ const CartLink = ({ count }) => (
     <ShoppingCart className="h-4 w-4" />
     <span className="hidden sm:inline">Cart</span>
     <AnimatePresence>
-      {count > 0 && (
+      {count > 0 ? (
         <motion.span
           key={count}
           initial={{ scale: 0.5, opacity: 0 }}
@@ -226,7 +226,7 @@ const CartLink = ({ count }) => (
         >
           {count}
         </motion.span>
-      )}
+      ) : null}
     </AnimatePresence>
   </Link>
 );
