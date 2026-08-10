@@ -12,7 +12,7 @@ export const AppProvider = ({ children }) => {
   const refreshData = useCallback(async () => {
     try {
       const response = await axios.get(`${baseUrl}/api/products`);
-      setData(response.data);
+      setData(Array.isArray(response.data) ? response.data : []);
       setIsError(false);
     } catch (error) {
       console.error("Error fetching data:", error);

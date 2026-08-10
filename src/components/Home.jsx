@@ -34,9 +34,10 @@ const Home = ({ selectedCategory }) => {
     toast.success(`${product.name} added to cart`);
   };
 
+  const safeData = Array.isArray(data) ? data : [];
   const filteredProducts = selectedCategory
-    ? data.filter((product) => product.category === selectedCategory)
-    : data;
+    ? safeData.filter((product) => product.category === selectedCategory)
+    : safeData;
 
   if (isError) {
     return (
