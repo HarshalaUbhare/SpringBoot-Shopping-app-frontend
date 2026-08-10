@@ -4,44 +4,108 @@
 
 @layer base {
   :root {
-    --background:   210 40% 98%;
-    --foreground:   215 28% 12%;
+    /* Deep space navy, dark theme */
+    --background:   250 35% 6%;
+    --foreground:   240 25% 96%;
 
-    --card:          0 0% 100%;
-    --card-foreground: 215 28% 12%;
+    --card:          248 30% 9%;
+    --card-foreground: 240 20% 96%;
 
-    --popover:       0 0% 100%;
-    --popover-foreground: 215 28% 12%;
+    --popover:       249 32% 8%;
+    --popover-foreground: 240 20% 96%;
 
-    /* Indigo primary */
-    --primary:          243 75% 59%;
+    /* Vivid violet primary + cyan accent for gradients */
+    --primary:          258 90% 66%;
     --primary-foreground: 0 0% 100%;
+    --accent-2:         189 94% 55%;
 
-    --secondary:       210 40% 95%;
-    --secondary-foreground: 215 28% 27%;
+    --secondary:       250 22% 15%;
+    --secondary-foreground: 240 15% 88%;
 
-    --muted:           210 40% 95%;
-    --muted-foreground: 215 16% 47%;
+    --muted:           250 20% 13%;
+    --muted-foreground: 240 12% 62%;
 
-    --accent:          243 75% 95%;
-    --accent-foreground: 243 75% 35%;
+    --accent:          258 65% 18%;
+    --accent-foreground: 258 92% 82%;
 
-    --destructive:     0 84% 60%;
+    --destructive:     0 78% 62%;
     --destructive-foreground: 0 0% 100%;
 
-    --border:  214 32% 91%;
-    --input:   214 32% 91%;
-    --ring:    243 75% 59%;
+    --border:  250 20% 20%;
+    --input:   250 20% 22%;
+    --ring:    258 90% 66%;
 
-    --radius: 0.625rem;
+    --radius: 0.85rem;
   }
 }
 
 @layer base {
   * { @apply border-border; }
-  body { @apply bg-background text-foreground antialiased; }
+
+  html { color-scheme: dark; }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image:
+      radial-gradient(60rem 40rem at 90% -10%, hsl(258 90% 30% / 0.22), transparent 60%),
+      radial-gradient(50rem 35rem at -10% 20%, hsl(189 94% 30% / 0.16), transparent 55%),
+      radial-gradient(70rem 50rem at 50% 120%, hsl(258 70% 25% / 0.14), transparent 60%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+
+  ::selection { background: hsl(var(--primary) / 0.35); color: hsl(var(--foreground)); }
+
+  /* Dark, minimal scrollbars */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 999px;
+    border: 2px solid hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary) / 0.5); }
+  * { scrollbar-width: thin; scrollbar-color: hsl(var(--border)) transparent; }
+}
+
+@layer components {
+  /* Frosted glass panel */
+  .glass {
+    @apply bg-card/60 backdrop-blur-xl backdrop-saturate-150 border border-white/[0.06];
+  }
+
+  /* Gradient text, e.g. brand wordmark */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent-2)));
+  }
+
+  /* Animated gradient text (subtle shimmer across brand/headings) */
+  .text-gradient-animated {
+    @apply text-gradient bg-[length:200%_auto] animate-gradient-x;
+  }
+
+  /* Reusable hover-lift + glow used on cards and tiles */
+  .interactive-surface {
+    @apply transition-all duration-300 ease-out;
+  }
+  .interactive-surface:hover {
+    @apply -translate-y-1 shadow-glow border-primary/40;
+  }
+
+  /* Thin gradient rule, used to cap sections/cards */
+  .gradient-rule {
+    height: 1px;
+    background-image: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.6), hsl(var(--accent-2) / 0.6), transparent);
+  }
 }
 
 /* Toast overrides */
-.Toastify__toast { @apply rounded-xl shadow-lg text-sm font-medium; }
-.Toastify__progress-bar { @apply bg-primary/40; }
+.Toastify__toast {
+  @apply rounded-xl text-sm font-medium border border-white/10;
+  background: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  box-shadow: 0 20px 60px -12px hsl(240 60% 2% / 0.7);
+}
+.Toastify__progress-bar { @apply bg-primary/60; }
+.Toastify__close-button { color: hsl(var(--muted-foreground)) !important; opacity: 0.8; }

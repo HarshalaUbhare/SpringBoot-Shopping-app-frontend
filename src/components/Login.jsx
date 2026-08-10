@@ -14,53 +14,80 @@ const Login = () => {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
-      {/* Decorative blobs */}
-      <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+      {/* Aurora background blobs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -left-40 -top-40 h-[28rem] w-[28rem] rounded-full bg-primary/25 blur-[100px] animate-aurora" />
+        <div className="absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-accent2/20 blur-[100px] animate-aurora [animation-delay:-6s]" />
+        <div className="absolute left-1/2 top-1/2 h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-500/10 blur-[100px] animate-aurora [animation-delay:-12s]" />
+      </div>
+
+      {/* Subtle grid */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.15]"
+        style={{
+          backgroundImage:
+            "linear-gradient(hsl(var(--border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+          maskImage: "radial-gradient(ellipse 60% 60% at 50% 40%, black, transparent)",
+        }}
+      />
 
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="relative w-full max-w-sm"
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="relative z-10 w-full max-w-sm"
       >
+        {/* Glow ring behind card */}
+        <div className="absolute -inset-px rounded-[1.75rem] bg-gradient-to-br from-primary/40 via-accent2/20 to-transparent opacity-60 blur-xl" />
+
         {/* Card */}
-        <div className="rounded-2xl border border-border bg-card px-8 py-10 shadow-xl">
+        <div className="glass relative rounded-[1.75rem] px-8 py-10 shadow-glow-lg">
           {/* Logo */}
-          <div className="mb-8 flex flex-col items-center gap-2">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow">
-              <Store className="h-6 w-6" />
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
+            className="mb-8 flex flex-col items-center gap-3"
+          >
+            <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent2 shadow-glow animate-float">
+              <Store className="h-7 w-7 text-white" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">ShopEase</h1>
-            <p className="text-center text-sm text-muted-foreground">
+            <h1 className="text-2xl font-bold tracking-tight text-gradient-animated">ShopEase</h1>
+            <p className="text-center text-sm leading-relaxed text-muted-foreground">
               Sign in to manage products, place orders,<br />and track your purchases.
             </p>
-          </div>
+          </motion.div>
 
           {/* OAuth buttons */}
-          <div className="flex flex-col gap-3">
-            {/* Google */}
-            <button
+          <motion.div
+            initial="hidden"
+            animate="show"
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } } }}
+            className="flex flex-col gap-3"
+          >
+            <motion.button
+              variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
               onClick={handleGoogle}
-              className="flex w-full items-center justify-center gap-3 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all hover:bg-accent hover:shadow-md active:scale-[0.98]"
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.08] hover:shadow-md active:scale-[0.98]"
             >
               <GoogleIcon />
               Continue with Google
-            </button>
+            </motion.button>
 
-            {/* GitHub */}
-            <button
+            <motion.button
+              variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
               onClick={handleGitHub}
-              className="flex w-full items-center justify-center gap-3 rounded-lg border border-border bg-foreground px-4 py-2.5 text-sm font-medium text-background shadow-sm transition-all hover:opacity-90 hover:shadow-md active:scale-[0.98]"
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-gradient-to-br from-primary to-accent2 px-4 py-2.5 text-sm font-medium text-white shadow-glow-sm transition-all hover:-translate-y-0.5 hover:shadow-glow active:scale-[0.98]"
             >
-              <GitHubIcon className="text-background" />
+              <GitHubIcon className="text-white" />
               Continue with GitHub
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
 
           <p className="mt-6 text-center text-xs text-muted-foreground">
             By signing in you agree to our{" "}
-            <span className="underline underline-offset-2 cursor-pointer hover:text-foreground">
+            <span className="cursor-pointer underline decoration-primary/40 underline-offset-2 transition-colors hover:text-foreground hover:decoration-primary">
               Terms of Service
             </span>
             .

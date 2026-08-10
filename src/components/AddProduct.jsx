@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import {
   AlertCircle,
@@ -39,13 +40,20 @@ const CATEGORIES = [
 ];
 
 const Section = ({ icon: Icon, title, children }) => (
-  <div className="bg-card rounded-2xl border border-border p-6 mb-4">
-    <p className="font-semibold text-sm mb-4 pb-3 border-b border-border flex items-center gap-2">
-      <Icon className="h-4 w-4 text-primary" />
+  <motion.div
+    initial={{ opacity: 0, y: 12 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.3 }}
+    className="bg-card rounded-2xl border border-white/[0.06] shadow-card p-6 mb-4"
+  >
+    <p className="font-semibold text-sm mb-4 pb-3 border-b border-white/[0.06] flex items-center gap-2.5">
+      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-accent2/10 ring-1 ring-primary/20">
+        <Icon className="h-3.5 w-3.5 text-primary" />
+      </span>
       {title}
     </p>
     {children}
-  </div>
+  </motion.div>
 );
 
 const AddProduct = () => {
@@ -171,7 +179,11 @@ const AddProduct = () => {
 
   return (
     <div className="container mx-auto px-4 mt-24 pb-12 max-w-2xl">
-      <div className="flex items-center gap-3 mb-6">
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-3 mb-6"
+      >
         <Button
           variant="ghost"
           size="sm"
@@ -189,7 +201,7 @@ const AddProduct = () => {
             Fill in the details to list a product.
           </p>
         </div>
-      </div>
+      </motion.div>
 
       <form onSubmit={submitHandler} noValidate>
         <Section icon={Info} title="Basic Information">
@@ -325,7 +337,7 @@ const AddProduct = () => {
             </div>
           </div>
           <div
-            className={`flex items-center gap-4 mt-4 p-4 rounded-xl border transition-colors ${product.productAvailable ? "bg-emerald-50 border-emerald-200" : "bg-muted border-border"}`}
+            className={`flex items-center gap-4 mt-4 p-4 rounded-xl border transition-all ${product.productAvailable ? "bg-emerald-500/10 border-emerald-500/30" : "bg-muted/50 border-white/[0.06]"}`}
           >
             <Switch
               id="productAvailable"
@@ -348,7 +360,7 @@ const AddProduct = () => {
         <Section icon={ImageIcon} title="Product Image">
           <label
             htmlFor="imageUpload"
-            className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-all ${imagePreview ? "border-primary/40 bg-accent/20" : "border-border bg-muted/50 hover:border-primary hover:bg-accent/20"}`}
+            className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-all ${imagePreview ? "border-primary/40 bg-accent/20" : "border-white/10 bg-white/[0.02] hover:border-primary/50 hover:bg-accent/10"}`}
           >
             {imagePreview ? (
               <div className="text-center">

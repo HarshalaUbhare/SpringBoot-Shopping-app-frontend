@@ -76,15 +76,23 @@ const Cart = () => {
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="mx-auto max-w-5xl px-4 py-8 sm:px-6"
+    >
       <Card>
-        <CardHeader className="border-b border-border">
-          <CardTitle className="text-xl">Shopping Cart</CardTitle>
+        <CardHeader className="border-b border-white/[0.06]">
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <ShoppingCart className="h-5 w-5 text-primary" />
+            Shopping Cart
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-4 sm:p-6">
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-16 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted ring-1 ring-white/10">
                 <ShoppingCart className="h-8 w-8 text-muted-foreground" />
               </div>
               <h3 className="text-lg font-semibold">Your cart is empty</h3>
@@ -98,7 +106,7 @@ const Cart = () => {
               <div className="hidden md:block">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                    <tr className="border-b border-white/[0.06] text-left text-xs uppercase tracking-wide text-muted-foreground">
                       <th className="py-2 font-medium">Product</th>
                       <th className="py-2 font-medium">Price</th>
                       <th className="py-2 font-medium">Quantity</th>
@@ -115,14 +123,14 @@ const Cart = () => {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0, x: -20 }}
-                          className="border-b border-border/60"
+                          className="border-b border-white/[0.04] transition-colors hover:bg-white/[0.02]"
                         >
                           <td className="py-3">
                             <div className="flex items-center gap-3">
                               <img
                                 src={`${baseUrl}/api/product/${item.id}/image`}
                                 alt={item.name}
-                                className="h-14 w-14 rounded-lg object-cover"
+                                className="h-14 w-14 rounded-lg border border-white/[0.06] object-cover"
                               />
                               <div>
                                 <p className="font-medium">{item.name}</p>
@@ -138,7 +146,7 @@ const Cart = () => {
                               onIncrease={() => handleIncreaseQuantity(item.id)}
                             />
                           </td>
-                          <td className="font-bold">₹{(item.price * item.quantity).toFixed(2)}</td>
+                          <td className="font-bold text-gradient">₹{(item.price * item.quantity).toFixed(2)}</td>
                           <td>
                             <Button
                               variant="ghost"
@@ -166,13 +174,13 @@ const Cart = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="rounded-xl border border-border p-3"
+                      className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3"
                     >
                       <div className="flex gap-3">
                         <img
                           src={`${baseUrl}/api/product/${item.id}/image`}
                           alt={item.name}
-                          className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                          className="h-14 w-14 shrink-0 rounded-lg border border-white/[0.06] object-cover"
                         />
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-medium">{item.name}</p>
@@ -201,10 +209,15 @@ const Cart = () => {
                 </AnimatePresence>
               </div>
 
-              <div className="mt-6 flex items-center justify-between rounded-xl bg-muted/50 p-4">
+              <motion.div
+                key={totalPrice}
+                initial={{ scale: 0.98 }}
+                animate={{ scale: 1 }}
+                className="mt-6 flex items-center justify-between rounded-xl border border-primary/20 bg-gradient-to-r from-primary/10 to-accent2/5 p-4"
+              >
                 <span className="font-semibold">Total</span>
-                <span className="text-xl font-bold">₹{totalPrice.toFixed(2)}</span>
-              </div>
+                <span className="text-xl font-bold text-gradient">₹{totalPrice.toFixed(2)}</span>
+              </motion.div>
 
               <Button size="lg" className="mt-4 w-full" onClick={() => setShowModal(true)}>
                 Proceed to Checkout
@@ -222,22 +235,24 @@ const Cart = () => {
         handleCheckout={handleCheckout}
         user={user}
       />
-    </div>
+    </motion.div>
   );
 };
 
 const QuantityStepper = ({ value, onDecrease, onIncrease }) => (
-  <div className="flex w-fit items-center rounded-lg border border-input">
+  <div className="flex w-fit items-center rounded-lg border border-white/10 bg-white/[0.03]">
     <button
       onClick={onDecrease}
-      className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+      className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
     >
       <Minus className="h-3.5 w-3.5" />
     </button>
-    <span className="w-8 text-center text-sm font-medium">{value}</span>
+    <motion.span key={value} initial={{ scale: 1.3 }} animate={{ scale: 1 }} className="w-8 text-center text-sm font-medium">
+      {value}
+    </motion.span>
     <button
       onClick={onIncrease}
-      className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+      className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
     >
       <Plus className="h-3.5 w-3.5" />
     </button>

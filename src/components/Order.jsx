@@ -72,15 +72,22 @@ const Order = () => {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="mx-auto max-w-6xl px-4 py-8 sm:px-6"
+    >
       <div className="mb-6 flex items-center gap-2">
-        <ClipboardList className="h-6 w-6 text-primary" />
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent2 shadow-glow-sm">
+          <ClipboardList className="h-5 w-5 text-white" />
+        </span>
         <h1 className="text-2xl font-bold">Order Management</h1>
       </div>
 
       {orders.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-16 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted ring-1 ring-white/10">
             <PackageSearch className="h-8 w-8 text-muted-foreground" />
           </div>
           <h3 className="text-lg font-semibold">No orders found</h3>
@@ -89,13 +96,13 @@ const Order = () => {
         <>
           {/* Desktop table */}
           <Card className="hidden overflow-hidden md:block">
-            <CardHeader className="border-b border-border bg-muted/40 py-3">
+            <CardHeader className="border-b border-white/[0.06] bg-white/[0.02] py-3">
               <CardTitle className="text-base">Orders ({orders.length})</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr className="border-b border-white/[0.06] text-left text-xs uppercase tracking-wide text-muted-foreground">
                     <th className="px-4 py-3 font-medium">Order ID</th>
                     <th className="px-4 py-3 font-medium">Customer</th>
                     <th className="px-4 py-3 font-medium">Date</th>
@@ -110,7 +117,7 @@ const Order = () => {
                     const expanded = expandedOrder === order.orderId;
                     return (
                       <Fragment key={order.orderId}>
-                        <tr className="border-b border-border/60">
+                        <tr className="border-b border-white/[0.04] transition-colors hover:bg-white/[0.02]">
                           <td className="px-4 py-3 font-semibold">{order.orderId}</td>
                           <td className="px-4 py-3">
                             <p>{order.customerName}</p>
@@ -118,10 +125,10 @@ const Order = () => {
                           </td>
                           <td className="px-4 py-3">{new Date(order.orderDate).toLocaleDateString()}</td>
                           <td className="px-4 py-3">
-                            <Badge variant={STATUS_VARIANT[order.status] || "secondary"}>{order.status}</Badge>
+                            <Badge variant={STATUS_VARIANT[order.status] || "secondary"} dot>{order.status}</Badge>
                           </td>
                           <td className="px-4 py-3">{order.items.length}</td>
-                          <td className="px-4 py-3 font-bold">{formatCurrency(calculateOrderTotal(order.items))}</td>
+                          <td className="px-4 py-3 font-bold text-gradient">{formatCurrency(calculateOrderTotal(order.items))}</td>
                           <td className="px-4 py-3">
                             <Button variant="outline" size="sm" onClick={() => toggleOrderDetails(order.orderId)}>
                               {expanded ? "Hide" : "Details"}
@@ -139,7 +146,7 @@ const Order = () => {
                                   animate={{ height: "auto", opacity: 1 }}
                                   exit={{ height: 0, opacity: 0 }}
                                   transition={{ duration: 0.2 }}
-                                  className="overflow-hidden bg-muted/30"
+                                  className="overflow-hidden bg-white/[0.02]"
                                 >
                                   <OrderItemsTable items={order.items} />
                                 </motion.div>
@@ -170,7 +177,7 @@ const Order = () => {
                           {new Date(order.orderDate).toLocaleDateString()}
                         </p>
                       </div>
-                      <Badge variant={STATUS_VARIANT[order.status] || "secondary"}>{order.status}</Badge>
+                      <Badge variant={STATUS_VARIANT[order.status] || "secondary"} dot>{order.status}</Badge>
                     </div>
                     <div className="mt-2">
                       <p className="font-medium">{order.customerName}</p>
@@ -192,7 +199,7 @@ const Order = () => {
                           transition={{ duration: 0.2 }}
                           className="overflow-hidden"
                         >
-                          <div className="mt-3 space-y-1 border-t border-border pt-3">
+                          <div className="mt-3 space-y-1 border-t border-white/[0.06] pt-3">
                             {order.items.map((item, index) => (
                               <div key={index} className="flex justify-between text-sm">
                                 <span>
@@ -201,7 +208,7 @@ const Order = () => {
                                 <span className="font-medium">{formatCurrency(item.totalPrice)}</span>
                               </div>
                             ))}
-                            <div className="flex justify-between border-t border-border pt-2 font-bold">
+                            <div className="flex justify-between border-t border-white/[0.06] pt-2 font-bold">
                               <span>Total</span>
                               <span>{formatCurrency(calculateOrderTotal(order.items))}</span>
                             </div>
@@ -216,7 +223,7 @@ const Order = () => {
           </div>
         </>
       )}
-    </div>
+    </motion.div>
   );
 };
 

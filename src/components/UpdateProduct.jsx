@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import axios from "axios";
+import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { ArrowLeft, Image as ImageIcon, IndianRupee, Info, Loader2, RotateCw, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,13 +30,20 @@ const CATEGORIES = [
 ];
 
 const Section = ({ icon: Icon, title, children }) => (
-  <div className="bg-card rounded-2xl border border-border p-6 mb-4">
-    <p className="font-semibold text-sm mb-4 pb-3 border-b border-border flex items-center gap-2">
-      <Icon className="h-4 w-4 text-primary" />
+  <motion.div
+    initial={{ opacity: 0, y: 12 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.3 }}
+    className="bg-card rounded-2xl border border-white/[0.06] shadow-card p-6 mb-4"
+  >
+    <p className="font-semibold text-sm mb-4 pb-3 border-b border-white/[0.06] flex items-center gap-2.5">
+      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-accent2/10 ring-1 ring-primary/20">
+        <Icon className="h-3.5 w-3.5 text-primary" />
+      </span>
       {title}
     </p>
     {children}
-  </div>
+  </motion.div>
 );
 
 const UpdateProduct = () => {
@@ -243,7 +251,7 @@ const UpdateProduct = () => {
             </div>
           </div>
           <div
-            className={`flex items-center gap-4 mt-4 p-4 rounded-xl border transition-colors ${updateProduct.productAvailable ? "bg-emerald-50 border-emerald-200" : "bg-muted border-border"}`}
+            className={`flex items-center gap-4 mt-4 p-4 rounded-xl border transition-all ${updateProduct.productAvailable ? "bg-emerald-500/10 border-emerald-500/30" : "bg-muted/50 border-white/[0.06]"}`}
           >
             <Switch
               id="productAvailable"
@@ -262,7 +270,7 @@ const UpdateProduct = () => {
         <Section icon={ImageIcon} title="Product Image">
           <label
             htmlFor="imageUpload"
-            className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-all border-primary/40 bg-accent/20 hover:border-primary"
+            className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-8 cursor-pointer transition-all border-primary/40 bg-accent/10 hover:border-primary hover:bg-accent/20"
           >
             {image ? (
               <div className="text-center">

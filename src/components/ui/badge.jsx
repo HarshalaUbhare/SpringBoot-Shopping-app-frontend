@@ -3,25 +3,43 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none",
+  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none",
   {
     variants: {
       variant: {
-        default:     "border-transparent bg-primary text-primary-foreground",
-        secondary:   "border-transparent bg-secondary text-secondary-foreground",
+        default:     "border-transparent bg-gradient-to-r from-primary to-accent2 text-primary-foreground shadow-glow-sm",
+        secondary:   "border-white/10 bg-secondary text-secondary-foreground",
         outline:     "border-border text-foreground",
-        success:     "border-transparent bg-emerald-100 text-emerald-700",
-        info:        "border-transparent bg-sky-100 text-sky-700",
-        warning:     "border-transparent bg-amber-100 text-amber-700",
-        destructive: "border-transparent bg-red-100 text-red-700",
+        success:     "border-emerald-500/20 bg-emerald-500/10 text-emerald-400",
+        info:        "border-sky-500/20 bg-sky-500/10 text-sky-400",
+        warning:     "border-amber-500/20 bg-amber-500/10 text-amber-400",
+        destructive: "border-red-500/20 bg-red-500/10 text-red-400",
       },
     },
     defaultVariants: { variant: "default" },
   }
 );
 
-function Badge({ className, variant, ...props }) {
-  return <span className={cn(badgeVariants({ variant, className }))} {...props} />;
+const DOT_COLOR = {
+  default: "bg-primary-foreground",
+  success: "bg-emerald-400",
+  info: "bg-sky-400",
+  warning: "bg-amber-400",
+  destructive: "bg-red-400",
+};
+
+function Badge({ className, variant, dot = false, children, ...props }) {
+  return (
+    <span className={cn(badgeVariants({ variant, className }))} {...props}>
+      {dot ? (
+        <span className="relative flex h-1.5 w-1.5">
+          <span className={cn("absolute inline-flex h-full w-full animate-ping rounded-full opacity-75", DOT_COLOR[variant] || DOT_COLOR.default)} />
+          <span className={cn("relative inline-flex h-1.5 w-1.5 rounded-full", DOT_COLOR[variant] || DOT_COLOR.default)} />
+        </span>
+      ) : null}
+      {children}
+    </span>
+  );
 }
 
 export { Badge, badgeVariants };

@@ -92,13 +92,19 @@ const Product = () => {
       </Button>
 
       <div className="grid gap-8 md:grid-cols-2">
-        <div className="flex items-center justify-center rounded-2xl border border-border bg-muted/40 p-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="relative flex items-center justify-center overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.04] to-transparent p-6 shadow-card"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent2/10" />
           <img
             src={imageUrl}
             alt={product.name}
-            className="max-h-96 w-full object-contain"
+            className="relative max-h-96 w-full object-contain drop-shadow-2xl"
           />
-        </div>
+        </motion.div>
 
         <div>
           <Badge variant="secondary" className="mb-3">
@@ -110,10 +116,10 @@ const Product = () => {
 
           <div className="mb-4">
             <h3 className="mb-1 text-sm font-semibold">Product Description</h3>
-            <p className="text-sm text-muted-foreground">{product.description}</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">{product.description}</p>
           </div>
 
-          <p className="mb-4 text-3xl font-bold">₹{product.price}</p>
+          <p className="mb-4 text-3xl font-bold text-gradient">₹{product.price}</p>
 
           <Button
             size="lg"
@@ -125,9 +131,12 @@ const Product = () => {
             {product.stockQuantity !== 0 ? "Add to Cart" : "Out of Stock"}
           </Button>
 
-          <p className="mb-6 text-sm">
+          <p className="mb-6 flex items-center gap-2 text-sm">
             Stock Available:{" "}
-            <span className="font-bold text-emerald-600">{product.stockQuantity}</span>
+            <span className={`inline-flex items-center gap-1.5 font-bold ${outOfStock ? "text-destructive" : "text-emerald-400"}`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${outOfStock ? "bg-destructive" : "bg-emerald-400 animate-pulse"}`} />
+              {product.stockQuantity}
+            </span>
           </p>
 
           <div className="flex flex-wrap gap-3">
@@ -135,7 +144,7 @@ const Product = () => {
               <Pencil className="h-4 w-4" />
               Update
             </Button>
-            <Button variant="outline" className="text-destructive hover:bg-destructive/10" onClick={deleteProduct}>
+            <Button variant="outline" className="text-destructive hover:border-destructive/40 hover:bg-destructive/10" onClick={deleteProduct}>
               <Trash2 className="h-4 w-4" />
               Delete
             </Button>
